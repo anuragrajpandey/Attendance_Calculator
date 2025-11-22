@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Attendance — Aesthetic + Animated (No Drops)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  /* Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+  :root{
+    --bg-1:#f7fbff;
+    --bg-2:#eef6ff;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --accent-1:#4f46e5; /* deep indigo */
+    --accent-2:#06b6d4; /* teal */
+    --accent-3:#7c3aed; /* purple */
+    --good:#10b981;
+    --bad:#ef4444;
+    --glass: rgba(255,255,255,0.7);
+    --radius:18px;
+    --shadow-lg: 0 20px 50px rgba(12,18,31,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+    --ease: cubic-bezier(.2,.9,.2,1);
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
+    display:flex;align-items:center;justify-content:center;padding:28px;color:#0b1220;
+  }
+
+  /* layout card */
+  .app{
+    width:100%; max-width:1100px; border-radius:20px; padding:22px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,255,0.85));
+    box-shadow: var(--shadow-lg); border:1px solid rgba(2,6,23,0.04);
+    display:grid; gap:18px;
+    grid-template-columns: 1fr;
+    transform: translateZ(0);
+  }
+  @media(min-width:900px){ .app{grid-template-columns: 380px 1fr} }
+
+  /* LEFT / CONTROLS */
+  .left{
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .title{
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .title h1{ margin:0; font-size:20px; font-weight:800; letter-spacing:-0.2px }
+  .title p{ margin:0; color:var(--muted); font-size:13px }
+
+  .targets{
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .target {
+    padding:8px 12px; border-radius:999px; font-weight:700; font-size:14px;
+    border:1px solid rgba(11,18,32,0.06); background:transparent; cursor:pointer;
+    transition: transform 180ms var(--ease), box-shadow 180ms var(--ease), background 180ms var(--ease);
+  }
+  .target:hover{ transform:translateY(-4px); box-shadow:0 8px 20px rgba(79,70,229,0.12) }
+  .target.active{
+    background: linear-gradient(90deg,var(--accent-1),var(--accent-3));
+    color:white; border:0; box-shadow: 0 10px 30px rgba(79,70,229,0.14);
+  }
+
+  .field{
+    display:flex; flex-direction:column; gap:6px;
+  }
+  label{ color:var(--muted); font-size:13px }
+  input[type=number]{
+    padding:12px 14px; border-radius:12px; border:1px solid rgba(11,18,32,0.06);
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,250,255,0.6));
+    font-size:15px; outline:none; transition: box-shadow 160ms var(--ease), transform 160ms var(--ease);
+  }
+  input[type=number]:focus{
+    box-shadow: 0 10px 30px rgba(14,165,233,0.10);
+    transform: translateY(-2px);
+  }
+
+  .control-row{ display:flex; gap:10px; margin-top:8px }
+  .btn{
+    flex:1; padding:12px 14px; border-radius:12px; font-weight:800; border:0; cursor:pointer;
+    transition: transform 140ms var(--ease), box-shadow 140ms var(--ease);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+  }
+  .btn:active{ transform: translateY(2px) scale(.995) }
+  .btn.present{ background: linear-gradient(90deg,var(--accent-1),var(--accent-3)); color:white; }
+  .btn.absent{ background: transparent; border:1px solid rgba(11,18,32,0.06); color:var(--muted) }
+
+  .muted { color:var(--muted); font-size:13px }
+
+  /* RIGHT / DISPLAY */
+  .right{ padding:8px; display:flex; flex-direction:column; gap:12px; align-items:stretch }
+
+  .display-top{ display:flex; justify-content:space-between; align-items:center; gap:12px }
+  .percent-wrap{ display:flex; align-items:center; gap:14px }
+
+  /* Circular progress */
+  .circle {
+    width:108px; height:108px; border-radius:999px; display:flex;align-items:center;justify-content:center;
+    background: conic-gradient(var(--accent-1) 0deg, rgba(200,200,255,0.15) 0deg);
+    box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+    position:relative;
+    transition: box-shadow 200ms var(--ease), transform 200ms var(--ease);
+  }
+  .circle:hover{ transform: translateY(-4px); box-shadow: 0 20px 40px rgba(15,23,42,0.12) }
+  .circle .percent { font-size:20px; font-weight:800; }
+  .circle .sub { font-size:12px; color:var(--muted) }
+
+  /* status badge */
+  .status {
+    padding:8px 12px; border-radius:999px; font-weight:800; display:inline-block; min-width:72px; text-align:center;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  }
+  .status.ok{ background: linear-gradient(90deg,#dcfce7,#bbf7d0); color:var(--good) }
+  .status.low{ background: linear-gradient(90deg,#fee2e2,#ffccd5); color:var(--bad) }
+
+  /* linear progress bar */
+  .bar-wrap{ height:10px; border-radius:10px; background: rgba(2,6,23,0.04); overflow:hidden; width:100% }
+  .bar { height:100%; width:0%; border-radius:10px; transition: width 600ms var(--ease); background: linear-gradient(90deg,var(--accent-1),var(--accent-2)) }
+
+  .projection{ display:flex; justify-content:space-between; align-items:center; font-weight:700; color:var(--muted) }
+
+  .bunk{
+    display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:12px;
+    background: linear-gradient(180deg, rgba(250,250,255,0.6), rgba(255,255,255,0.7));
+    border:1px solid rgba(11,18,32,0.04); font-weight:800;
+  }
+
+  .message{
+    margin-top:6px; padding:12px; border-radius:12px; background: linear-gradient(90deg, rgba(14,165,233,0.06), rgba(124,58,237,0.03));
+    color: #05203a; font-weight:700; min-height:56px; display:flex; align-items:center; justify-content:center; text-align:center;
+    transition: transform 140ms var(--ease);
+  }
+  .message.celebrate { background: linear-gradient(90deg,#ecfeff,#eae6ff); color:#05203a }
+
+  /* footer */
+  .meta { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:13px }
+
+  /* TOAST / ROAST POPUP - centered */
+  .roast{
+    position:fixed; left:50%; top:14%; transform:translateX(-50%) translateY(-8px); min-width:320px; max-width:820px;
+    background: linear-gradient(90deg,#120712,#2d061a); color:#ffd6d6; padding:18px 20px; border-radius:14px;
+    z-index:1200; box-shadow:0 30px 80px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.06);
+    opacity:0; pointer-events:none; transform-origin:center top; transition: opacity 260ms var(--ease), transform 260ms var(--ease);
+  }
+  .roast.show{ opacity:1; pointer-events:auto; transform: translateX(-50%) translateY(0); }
+  .roast p{ margin:0; font-weight:900; font-size:18px; line-height:1.2; text-shadow:0 2px 8px rgba(0,0,0,0.45) }
+  .roast small{ display:block; margin-top:8px; color:#ffdede; opacity:0.9; font-weight:600 }
+
+  .roast button{ margin-top:12px; background:#ff3b30;border:0;padding:10px 12px;border-radius:10px;color:white;font-weight:800; cursor:pointer }
+
+  /* micro hover effects */
+  .target:active, .btn:active { transform: translateY(1px) }
+</style>
+</head>
+<body>
+
+<div class="app" role="application" aria-label="Animated attendance calculator">
+  <!-- LEFT: controls -->
+  <div class="left" aria-hidden="false">
+    <div class="title">
+      <div>
+        <h1>Attendance</h1>
+        <p class="muted">Minimal • aesthetic • animated</p>
+      </div>
+      <div class="muted">Auto-save · Local</div>
+    </div>
+
+    <div class="field">
+      <div class="muted">Targets</div>
+      <div class="targets" id="targets">
+        <button class="target" data-val="75">75%</button>
+        <button class="target" data-val="80">80%</button>
+        <button class="target" data-val="85">85%</button>
+        <button class="target" data-val="90">90%</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Total</label>
+      <input id="total" type="number" min="0" value="60" inputmode="numeric" />
+    </div>
+
+    <div class="field">
+      <label>Attended</label>
+      <input id="attended" type="number" min="0" value="45" inputmode="numeric" />
+    </div>
+
+    <div class="control-row">
+      <button class="btn present" id="present">+ Present</button>
+      <button class="btn absent" id="absent">+ Absent</button>
+    </div>
+
+    <div class="field">
+      <div style="display:flex;gap:8px">
+        <input id="upcoming" type="number" min="0" placeholder="Upcoming" />
+        <input id="willAttend" type="number" min="0" placeholder="Will attend" />
+      </div>
+    </div>
+
+    <div class="control-row">
+      <button class="btn" id="apply">Apply</button>
+      <button class="btn" id="reset">Reset</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: display -->
+  <div class="right" aria-live="polite">
+    <div class="display-top">
+      <div class="percent-wrap">
+        <div class="circle" id="circle">
+          <div style="text-align:center">
+            <div class="percent" id="percent">0.00%</div>
+            <div class="sub muted" id="sub">Current</div>
+          </div>
+        </div>
+        <div style="min-width:160px">
+          <div class="bar-wrap" aria-hidden="true" style="margin-bottom:8px">
+            <div class="bar" id="bar"></div>
+          </div>
+          <div class="muted" style="display:flex;justify-content:space-between;">
+            <div id="curText">Attended</div>
+            <div id="totText">Total</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:right">
+        <div id="status" class="status">—</div>
+      </div>
+    </div>
+
+    <div class="projection">
+      <div class="muted">Projected</div>
+      <div id="proj">0 / 0 — 0.00%</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">Needed</div>
+      <div id="needed" style="font-weight:800">—</div>
+    </div>
+
+    <div class="bunk" id="bunkRow">
+      <div id="bunkLabel" style="font-size:13px;color:var(--muted)">You can bunk</div>
+      <div id="bunkCount" style="font-weight:900">—</div>
+    </div>
+
+    <div id="message" class="message">—</div>
+
+    <div class="meta">
+      <div class="muted">Simple</div>
+      <div class="muted" id="currentTarget">75%</div>
+    </div>
+  </div>
+</div>
+
+<!-- roast toast -->
+<div class="roast" id="roast" role="alert" aria-hidden="true" aria-live="assertive">
+  <p id="roastText">What the fuck are you doing?</p>
+  <small>Don't try to bypass the system.</small>
+  <button id="roastClose">Got it</button>
+</div>
+
+<script>
+/* Animated attendance app (confetti/drops removed)
+   - logic & protections preserved
+   - no particle/dropping behavior anywhere
+   - roast popup still available
+*/
+
+const $ = id => document.getElementById(id);
+
+/* Elements */
+const targets = Array.from(document.querySelectorAll('.target'));
+const totalEl = $('total'), attendedEl = $('attended'), upcomingEl = $('upcoming'), willAttendEl = $('willAttend');
+const presentBtn = $('present'), absentBtn = $('absent'), applyBtn = $('apply'), resetBtn = $('reset');
+const percentEl = $('percent'), circleEl = $('circle'), barEl = $('bar');
+const statusEl = $('status'), projEl = $('proj'), neededEl = $('needed');
+const bunkLabel = $('bunkLabel'), bunkCount = $('bunkCount'), messageEl = $('message');
+const currentTargetEl = $('currentTarget'), curText = $('curText'), totText = $('totText');
+const roast = $('roast'), roastText = $('roastText'), roastClose = $('roastClose');
+
+/* Persistence */
+const STORAGE = 'att_aesthetic_v1';
+function save(){ 
+  const state = {
+    total: toNum(totalEl.value), attended: toNum(attendedEl.value),
+    upcoming: toNum(upcomingEl.value), willAttend: toNum(willAttendEl.value),
+    target: getTarget()
+  };
+  localStorage.setItem(STORAGE, JSON.stringify(state));
+}
+function load(){
+  try {
+    const s = JSON.parse(localStorage.getItem(STORAGE) || '{}');
+    if(typeof s.total === 'number') totalEl.value = s.total;
+    if(typeof s.attended === 'number') attendedEl.value = s.attended;
+    if(typeof s.upcoming === 'number') upcomingEl.value = s.upcoming;
+    if(typeof s.willAttend === 'number') willAttendEl.value = s.willAttend;
+    if(typeof s.target === 'number') setTarget(s.target);
+  } catch(e){}
+}
+
+/* helpers */
+function toNum(v){ const n = parseInt(String(v).replace(/[^\d-]/g,''),10); return isNaN(n) ? 0 : Math.max(0,n); }
+function pct(att, tot){ return tot <= 0 ? 0 : (att / tot) * 100; }
+function classesNeeded(att, tot, target){ const t = target/100; if(pct(att,tot) >= target) return 0; if(t>=1) return Infinity; const numerator = t*tot - att; const denom = 1 - t; if(denom<=0) return Infinity; return Math.max(0, Math.ceil(numerator/denom)); }
+function maxBunk(att, tot, target){ const t = target/100; if(t===0) return Infinity; if(pct(att,tot) < target) return 0; const raw = (att - t*tot)/t; return Math.max(0, Math.floor(raw)); }
+
+/* Targets */
+function getTarget(){
+  const active = targets.find(t => t.classList.contains('active'));
+  return active ? Number(active.dataset.val) : 75;
+}
+function setTarget(v){
+  targets.forEach(t => t.classList.toggle('active', Number(t.dataset.val) === Number(v)));
+  currentTargetEl.textContent = Number(v) + '%';
+}
+targets.forEach(t => t.addEventListener('click', () => { setTarget(t.dataset.val); update(); }));
+
+/* ROAST POOL (1000 harsh messages built lazily) */
+(function buildRoastPool(){
+  const starts = ["Why the fuck are you", "Seriously, why are you", "Are you stupid", "What the hell are you", "Stop it — you're"];
+  const middles = ["trying to bypass the system", "typing nonsense", "fucking around with numbers", "doing that dumb shit", "acting dumb"];
+  const ends = ["— it won't work.", "— stop right now.", "— you're not clever.", "— system rejects that.", "— you're wasting time."];
+  window.ROAST_POOL = [];
+  let i = 0;
+  while(window.ROAST_POOL.length < 1000){
+    const a = starts[(i*5) % starts.length];
+    const b = middles[(i*7) % middles.length];
+    const c = ends[(i*11) % ends.length];
+    const variants = [
+      `${a} ${b} ${c}`,
+      `${a}! ${b} ${c}`,
+      `${b.charAt(0).toUpperCase()+b.slice(1)} — ${a.toLowerCase()} ${c}`,
+      `${a} ${b}. ${c}`,
+      `${b} ${a}. ${c}`
+    ];
+    window.ROAST_POOL.push(variants[i % variants.length]);
+    i++;
+  }
+})();
+function pickRoast(){ return window.ROAST_POOL[Math.floor(Math.random()*window.ROAST_POOL.length)]; }
+
+/* ROAST TOAST */
+let roastTimer = null;
+function showRoast(msg){
+  roastText.textContent = msg || pickRoast();
+  roast.classList.add('show');
+  roast.setAttribute('aria-hidden','false');
+  if(roastTimer) clearTimeout(roastTimer);
+  roastTimer = setTimeout(()=>{ roast.classList.remove('show'); roast.setAttribute('aria-hidden','true'); }, 5000);
+}
+roastClose.addEventListener('click', ()=>{ roast.classList.remove('show'); roast.setAttribute('aria-hidden','true'); });
+
+/* previous valid values to revert on invalid attempts */
+let prevAttended = toNum(attendedEl.value);
+let prevWillAttend = toNum(willAttendEl.value);
+
+/* Update UI with animations (drops removed) */
+function update(){
+  let total = toNum(totalEl.value);
+  let attended = toNum(attendedEl.value);
+  let upcoming = toNum(upcomingEl.value);
+  let willAttend = toNum(willAttendEl.value);
+
+  // Revert logic: if user typed attended > total => revert to prevAttended and roast
+  if(attended > total){
+    attendedEl.value = prevAttended;
+    showRoast();
+    attended = prevAttended;
+  } else {
+    prevAttended = attended;
+  }
+
+  // willAttend protection
+  if(willAttend > upcoming){
+    willAttendEl.value = prevWillAttend;
+    showRoast();
+    willAttend = prevWillAttend;
+  } else {
+    prevWillAttend = willAttend;
+  }
+
+  const target = getTarget();
+  const safeAtt = Math.min(attended, total);
+  const curPct = pct(safeAtt,total);
+
+  // circular & bar animation: compute angle & width
+  const ang = Math.min(100, Math.max(0, curPct));
+  circleEl.style.background = `conic-gradient(var(--accent-1) ${ang*3.6}deg, rgba(200,200,255,0.15) 0deg)`;
+  barEl.style.width = Math.min(100,Math.max(0, curPct)) + '%';
+
+  percentEl.textContent = curPct.toFixed(2) + '%';
+  curText.textContent = `${safeAtt} attended`;
+  totText.textContent = `${total} total`;
+
+  // status
+  if(total === 0){
+    statusEl.textContent = '—'; statusEl.className = 'status';
+  } else if(curPct >= target){
+    statusEl.textContent = 'ON'; statusEl.className = 'status ok';
+  } else {
+    statusEl.textContent = 'LOW'; statusEl.className = 'status low';
+  }
+
+  // projection
+  const pTot = total + upcoming;
+  const pAtt = safeAtt + willAttend;
+  projEl.textContent = `${pAtt} / ${pTot} — ${ (pTot===0) ? '0.00%' : pct(pAtt,pTot).toFixed(2)+'%' }`;
+
+  // needed classes
+  const needed = classesNeeded(attended, total, target);
+  neededEl.textContent = needed === Infinity ? 'Impossible' : (needed + (needed===1 ? ' class' : ' classes'));
+
+  // bunk / need display (no dropping behavior)
+  if(total === 0 && attended === 0){
+    bunkLabel.textContent = 'You can bunk';
+    bunkCount.textContent = '—';
+  } else if(curPct >= target){
+    const bunk = maxBunk(attended, total, target);
+    bunkLabel.textContent = 'You can bunk';
+    bunkCount.textContent = (bunk === Infinity) ? 'Many' : (bunk + (bunk===1 ? ' class' : ' classes'));
+    messageEl.classList.remove('celebrate');
+  } else {
+    bunkLabel.textContent = 'You need';
+    const needCount = (needed === Infinity) ? 'Impossible' : (needed + (needed===1 ? ' class' : ' classes'));
+    bunkCount.textContent = needCount;
+    messageEl.classList.remove('celebrate');
+  }
+
+  // message text
+  if(total === 0){
+    messageEl.textContent = 'Enter values';
+  } else if(curPct >= target){
+    const bunk = maxBunk(attended, total, target);
+    messageEl.textContent = bunk > 0 ? `Nice — you can bunk ${bunk} and still be safe. Hehe.` : 'Solid — keep attending.';
+  } else {
+    messageEl.textContent = 'Not good — attend more to reach the target.';
+  }
+
+  save();
+}
+
+/* Input protections wiring */
+attendedEl.addEventListener('focus', ()=> prevAttended = toNum(attendedEl.value));
+attendedEl.addEventListener('input', ()=>{
+  const entered = toNum(attendedEl.value), total = toNum(totalEl.value);
+  if(entered > total){
+    attendedEl.value = prevAttended;
+    showRoast(pickRoast());
+  } else {
+    prevAttended = entered;
+    update();
+  }
+});
+willAttendEl.addEventListener('focus', ()=> prevWillAttend = toNum(willAttendEl.value));
+willAttendEl.addEventListener('input', ()=>{
+  const entered = toNum(willAttendEl.value), upcoming = toNum(upcomingEl.value);
+  if(entered > upcoming){
+    willAttendEl.value = prevWillAttend;
+    showRoast(pickRoast());
+  } else {
+    prevWillAttend = entered;
+    update();
+  }
+});
+totalEl.addEventListener('input', ()=>{
+  const total = toNum(totalEl.value), attended = toNum(attendedEl.value);
+  if(attended > total){
+    attendedEl.value = total;
+    prevAttended = total;
+    showRoast(pickRoast());
+  }
+  update();
+});
+upcomingEl.addEventListener('input', update);
+
+/* Buttons */
+presentBtn.addEventListener('click', ()=>{
+  totalEl.value = toNum(totalEl.value) + 1;
+  attendedEl.value = toNum(attendedEl.value) + 1;
+  prevAttended = toNum(attendedEl.value);
+  update();
+});
+absentBtn.addEventListener('click', ()=>{
+  totalEl.value = toNum(totalEl.value) + 1;
+  update();
+});
+applyBtn.addEventListener('click', ()=>{
+  const upcoming = toNum(upcomingEl.value);
+  const willAttend = Math.min(toNum(willAttendEl.value), upcoming);
+  totalEl.value = toNum(totalEl.value) + upcoming;
+  attendedEl.value = toNum(attendedEl.value) + willAttend;
+  prevAttended = toNum(attendedEl.value);
+  upcomingEl.value = ''; willAttendEl.value = '';
+  update();
+});
+resetBtn.addEventListener('click', ()=>{
+  if(confirm('Reset attendance data?')){
+    totalEl.value = 0; attendedEl.value = 0; upcomingEl.value = ''; willAttendEl.value = '';
+    setTarget(75);
+    localStorage.removeItem(STORAGE);
+    prevAttended = 0; prevWillAttend = 0;
+    update();
+  }
+});
+
+/* target clicks (and keyboard focus) */
+targets.forEach(t => {
+  t.addEventListener('click', () => { setTarget(t.dataset.val); update(); });
+  t.addEventListener('keydown', e => { if(e.key === 'Enter') { setTarget(t.dataset.val); update(); } });
+});
+
+/* initial load */
+(function init(){
+  setTarget(75);
+  load();
+  update();
+})();
+
+</script>
+</body>
+</html>
