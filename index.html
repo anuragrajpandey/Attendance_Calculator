@@ -3,56 +3,37 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>Attendance — Mobile Optimized</title>
+<title>Attendance — Minimal + Roasts</title>
 <style>
-  /* Mobile-first, simple & fast */
   :root{
-    --bg: #f5f7fb;
-    --card: #ffffff;
-    --muted: #6b7280;
-    --text: #0b1220;
-    --accent: #0ea5e9;
-    --good: #10b981;
-    --bad: #ef4444;
+    --bg:#ffffff;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --text:#0b1220;
+    --accent:#0ea5e9;
+    --good:#10b981;
+    --bad:#ef4444;
     --radius:12px;
-    --hit: 48px; /* minimal touch target */
+    --hit:48px;
   }
-
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   html,body{height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial; background:var(--bg); color:var(--text); -webkit-text-size-adjust:100%;}
   body{display:flex;align-items:flex-start;justify-content:center;padding:14px 12px;gap:12px;}
 
-  /* Container */
   .wrap{width:100%;max-width:980px;background:var(--card);border-radius:14px;padding:12px;box-shadow:0 8px 24px rgba(2,6,23,0.06); border:1px solid rgba(2,6,23,0.04); display:flex;flex-direction:column;gap:12px}
-  
-  /* HEAD */
   .head{display:flex;align-items:center;justify-content:space-between;gap:8px}
   .title{font-weight:800;font-size:18px}
   .subtitle{font-size:12px;color:var(--muted)}
-
-  /* Targets row */
   .targets{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-  .target{
-    padding:10px 12px;border-radius:999px;border:1px solid rgba(2,6,23,0.06);background:transparent;font-weight:800;font-size:14px;
-    min-height:var(--hit); display:inline-flex;align-items:center;justify-content:center; cursor:pointer;
-  }
+  .target{padding:10px 12px;border-radius:999px;border:1px solid rgba(2,6,23,0.06);background:transparent;font-weight:800;font-size:14px;min-height:var(--hit); display:inline-flex;align-items:center;justify-content:center; cursor:pointer;}
   .target.active{background:var(--accent);color:white;border:0; box-shadow:0 8px 20px rgba(14,165,233,0.12)}
-
-  /* Inputs - full width on mobile */
   .grid{display:grid;grid-template-columns:1fr;gap:8px}
   .label{font-size:13px;color:var(--muted);margin-bottom:6px}
-  .input{
-    width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(2,6,23,0.06);font-size:16px;background:transparent;
-    -webkit-appearance:none;appearance:none;
-  }
-
-  /* Buttons */
+  .input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(2,6,23,0.06);font-size:16px;background:transparent;-webkit-appearance:none;appearance:none;}
   .row{display:flex;gap:8px}
   .btn{flex:1;padding:12px;border-radius:12px;border:0;font-weight:900;font-size:15px;cursor:pointer;min-height:var(--hit)}
   .btn.primary{background:var(--accent);color:#fff}
   .btn.ghost{background:transparent;border:1px solid rgba(2,6,23,0.06);color:var(--muted)}
-
-  /* Display area */
   .display{padding:12px;border-radius:12px;background:rgba(2,6,23,0.02);display:flex;flex-direction:column;gap:12px}
   .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .percent{font-weight:900;font-size:32px}
@@ -60,39 +41,35 @@
   .status.ok{background:rgba(16,185,129,0.12);color:var(--good)}
   .status.low{background:rgba(239,68,68,0.12);color:var(--bad)}
   .muted{color:var(--muted);font-size:13px}
-
   .panel-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .panel-small{display:flex;flex-direction:column;gap:6px;min-width:0}
   .bunk{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:10px;background:rgba(2,6,23,0.02);font-weight:800}
   .message{padding:10px;border-radius:10px;background:rgba(14,165,233,0.04);font-weight:700;text-align:center}
 
-  footer{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;padding-top:4px}
-
-  /* Make inputs big on very small screens and improve spacing */
-  @media(min-width:760px){
-    .wrap{flex-direction:row; padding:18px; align-items:flex-start}
-    .left{width:360px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
-    .main{flex:1;display:flex;flex-direction:column;gap:10px}
-    .grid{grid-template-columns:1fr 1fr; gap:10px}
-    .targets{flex-direction:column;gap:10px}
+  /* roast popup */
+  .roast{
+    position:fixed; left:50%; top:12%; transform:translateX(-50%); min-width:320px; max-width:820px; padding:14px 16px;
+    border-radius:12px; background:#111; color:#ffdede; font-weight:900; z-index:3000; display:none; box-shadow:0 20px 70px rgba(0,0,0,0.5);
   }
+  .roast .txt{font-size:16px;line-height:1.2}
+  .roast .close{margin-top:10px;padding:8px 10px;border-radius:10px;border:0;background:#ff3b30;color:white;cursor:pointer;font-weight:800}
 
-  /* Accessibility / focus */
-  .target:focus, .btn:focus, .input:focus{outline:3px solid rgba(14,165,233,0.13);outline-offset:2px}
+  .toggle-roast{padding:8px 10px;border-radius:10px;border:1px solid rgba(2,6,23,0.06);background:transparent;font-weight:700;cursor:pointer}
+  @media(min-width:760px){ .wrap{flex-direction:row} .left{width:360px;flex-shrink:0} .main{flex:1} .grid{grid-template-columns:1fr 1fr; gap:10px} .targets{flex-direction:column} }
 </style>
 </head>
 <body>
-  <main class="wrap" role="application" aria-label="Attendance mobile optimized">
+  <main class="wrap" role="application" aria-label="Attendance with roasts">
     <div class="head">
       <div>
         <div class="title">Attendance</div>
-        <div class="subtitle">Mobile optimized • minimal</div>
+        <div class="subtitle">Minimal • white theme</div>
       </div>
-      <div class="muted">Auto-save</div>
+      <div>
+        <button id="toggleRoasts" class="toggle-roast" aria-pressed="true">Roasts: ON</button>
+      </div>
     </div>
 
-    <!-- LEFT controls (stacked on mobile) -->
-    <section class="left" aria-hidden="false" style="display:flex;flex-direction:column;gap:10px">
+    <section class="left" style="display:flex;flex-direction:column;gap:10px">
       <div class="muted" style="font-weight:700">Targets</div>
       <div class="targets" id="targets">
         <button class="target" data-val="75" aria-pressed="false">75%</button>
@@ -127,7 +104,6 @@
       </div>
     </section>
 
-    <!-- RIGHT / Main display -->
     <section class="main" style="display:flex;flex-direction:column;gap:10px">
       <div class="display" aria-live="polite">
         <div class="top">
@@ -164,33 +140,34 @@
     </section>
   </main>
 
+  <!-- roast popup -->
+  <div id="roast" class="roast" role="alert" aria-hidden="true">
+    <div class="txt" id="roastText">You messed up.</div>
+    <button id="roastClose" class="close">Close</button>
+  </div>
+
 <script>
-/* Mobile-optimized attendance logic
-   - mobile-first layout, larger hit areas, numeric keyboard hints
-   - revert invalid typed values (attended > total or willAttend > upcoming)
-   - present/absent/apply/reset preserved
-   - autosave with small JSON, fast update loop
-   - minimal DOM writes: update only changed fields
+/* Minimal attendance app + 500 roasts (generated via templates, lazy & efficient)
+   - White theme only
+   - Roasts: show on invalid input + random periodic pop-ups + chance on button clicks
+   - Toggle to enable/disable random/pop-up roasts
+   - 500 unique messages are generated by combining templates (no huge literal array)
 */
 
-// short selectors
+// helpers
 const $ = id => document.getElementById(id);
-
-// DOM
-const targets = Array.from(document.querySelectorAll('.target'));
 const totalEl = $('total'), attendedEl = $('attended'), upcomingEl = $('upcoming'), willAttendEl = $('willAttend');
 const presentBtn = $('present'), absentBtn = $('absent'), applyBtn = $('apply'), resetBtn = $('reset');
 const percentEl = $('percent'), statusWrap = $('statusWrap'), projEl = $('proj'), neededEl = $('needed');
-const bunkLabel = $('bunkLabel'), bunkCount = $('bunkCount'), messageEl = $('message');
-const currentTargetEl = $('currentTarget');
+const bunkLabel = $('bunkLabel'), bunkCount = $('bunkCount'), messageEl = $('message'), currentTargetEl = $('currentTarget');
+const targets = Array.from(document.querySelectorAll('.target'));
+const roastBox = $('roast'), roastText = $('roastText'), roastClose = $('roastClose');
+const toggleRoasts = $('toggleRoasts');
 
-// storage key
-const KEY = 'att_mobile_v1';
+const KEY = 'att_roast_v1';
 
-// simple number parse (safe)
+// minimal safe number parsing
 function toInt(v){ const n = parseInt(String(v).replace(/[^\d-]/g,''),10); return isNaN(n) ? 0 : Math.max(0,n); }
-
-// math helpers
 function pct(att, tot){ return tot <= 0 ? 0 : (att / tot) * 100; }
 function classesNeeded(att, tot, targetPct){
   const t = targetPct/100;
@@ -208,11 +185,161 @@ function maxBunk(att, tot, targetPct){
   return Math.max(0, Math.floor(raw));
 }
 
-// prev values to revert invalid typing
+// target helpers
+function setTarget(v){
+  targets.forEach(t => {
+    const active = Number(t.dataset.val) === Number(v);
+    t.classList.toggle('active', active);
+    t.setAttribute('aria-pressed', active?'true':'false');
+  });
+  currentTargetEl.textContent = Number(v) + '%';
+  update(true);
+}
+function getTarget(){ const a = targets.find(t => t.classList.contains('active')); return a ? Number(a.dataset.val) : 75; }
+targets.forEach(t => t.addEventListener('click', ()=> setTarget(t.dataset.val)));
+
+// persistence
+function saveState(){
+  try{
+    const s = { total: toInt(totalEl.value), attended: toInt(attendedEl.value), upcoming: toInt(upcomingEl.value), willAttend: toInt(willAttendEl.value), target: getTarget(), roastsOn: roastsEnabled };
+    localStorage.setItem(KEY, JSON.stringify(s));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const s = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if(typeof s.total === 'number') totalEl.value = s.total;
+    if(typeof s.attended === 'number') attendedEl.value = s.attended;
+    if(typeof s.upcoming === 'number') upcomingEl.value = s.upcoming;
+    if(typeof s.willAttend === 'number') willAttendEl.value = s.willAttend;
+    if(typeof s.target === 'number') setTarget(s.target);
+    if(typeof s.roastsOn === 'boolean') setRoastsEnabled(s.roastsOn);
+  }catch(e){}
+}
+
+// --- ROAST GENERATOR (500 unique-ish, built from templates) ---
+// We'll construct 500 messages by combining starts/middles/ends and adding small variants.
+// This avoids a monstrous literal array while producing many distinct outputs.
+const roastStarts = [
+  "Why the hell are you", "Seriously, why are you", "Who told you it's okay to",
+  "You absolute", "You're such a", "Stop being a", "Are you actually", "What the fuck, you're"
+];
+const roastAdjs = [
+  "clown", "numpty", "idiot", "buffoon", "dolt", "muppet", "miserable excuse", "trainwreck"
+];
+const roastVerbs = [
+  "typing nonsense", "trying to cheat the system", "entering absurd numbers", "messing with the inputs",
+  "acting like a fool", "doing dumb shit", "attempting a hack that won't work"
+];
+const roastEndings = [
+  "— it won't help.", "— stop it.", "— nobody's impressed.", "— the system rejects that.", "— you're wasting time.",
+  "— that's beyond dumb.", "— grow up and fix it."
+];
+
+// random helper
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+// generate N distinct roasts lazily into pool
+let ROAST_POOL = null;
+function buildRoastPool(n){
+  if(ROAST_POOL && ROAST_POOL.length >= n) return ROAST_POOL;
+  ROAST_POOL = [];
+  const combos = new Set();
+  let i = 0;
+  // Create variants until we reach n or hit reasonable attempts
+  while(ROAST_POOL.length < n && i < n*10){
+    const style = Math.random() < 0.4 ? 0 : 1;
+    let msg = "";
+    if(style === 0){
+      // "Why the hell are you typing nonsense — it won't help."
+      msg = `${rand(roastStarts)} ${rand(roastVerbs)} ${rand(roastEndings)}`;
+    } else {
+      // "You absolute clown — stop it."
+      msg = `${rand(roastStarts).replace(/(Why the hell are you|Seriously, why are you|Are you actually|What the fuck, you're)/,'You') } ${rand(roastAdjs)} ${rand(roastEndings)}`;
+      // try to clean duplicate phrasing
+      msg = msg.replace(/\s+/g,' ').trim();
+    }
+    // add some punctuation variants or short jab
+    if(Math.random() < 0.25) msg = msg.replace(/\.$/, '') + (Math.random()<0.5 ? '!' : ' — really.');
+    if(!combos.has(msg) && msg.length > 8){
+      combos.add(msg);
+      ROAST_POOL.push(msg);
+    }
+    i++;
+  }
+  // If still short, fill simpler templates
+  while(ROAST_POOL.length < n){
+    ROAST_POOL.push(`You're an idiot — stop it. (${ROAST_POOL.length+1})`);
+  }
+  return ROAST_POOL;
+}
+
+// pick a roast (ensures pool exists)
+function pickRoast(){
+  buildRoastPool(500);
+  return ROAST_POOL[Math.floor(Math.random()*ROAST_POOL.length)];
+}
+
+// --- roast popup control & behavior ---
+let roastsEnabled = true;
+function setRoastsEnabled(flag){
+  roastsEnabled = !!flag;
+  toggleRoasts.textContent = 'Roasts: ' + (roastsEnabled ? 'ON' : 'OFF');
+  toggleRoasts.setAttribute('aria-pressed', roastsEnabled ? 'true' : 'false');
+  saveState();
+}
+toggleRoasts.addEventListener('click', ()=> setRoastsEnabled(!roastsEnabled));
+
+// show roast safely (throttled)
+let roastTimeout = null, roastVisibleUntil = 0;
+function showRoast(msg){
+  if(!roastsEnabled) return;
+  const now = Date.now();
+  // throttle: don't show if a roast was shown within last 4s
+  if(now < roastVisibleUntil) return;
+  roastVisibleUntil = now + 4500;
+  roastText.textContent = msg || pickRoast();
+  roastBox.style.display = 'block';
+  roastBox.setAttribute('aria-hidden','false');
+  if(roastTimeout) clearTimeout(roastTimeout);
+  roastTimeout = setTimeout(()=>{ roastBox.style.display = 'none'; roastBox.setAttribute('aria-hidden','true'); }, 4200);
+}
+$('roastClose').addEventListener('click', ()=>{ roastBox.style.display = 'none'; roastBox.setAttribute('aria-hidden','true'); });
+
+// random periodic roast popups (only when enabled)
+let periodicRoastTimer = null;
+function schedulePeriodicRoast(){
+  if(periodicRoastTimer) clearTimeout(periodicRoastTimer);
+  if(!roastsEnabled) return;
+  // random time between 30s and 90s
+  const t = 30000 + Math.floor(Math.random()*60000);
+  periodicRoastTimer = setTimeout(()=>{
+    // show only if not in mid-input (simple heuristic)
+    const active = document.activeElement;
+    if(active && ['INPUT','TEXTAREA'].includes(active.tagName)) {
+      // small chance to still roast during typing
+      if(Math.random() < 0.25) showRoast();
+    } else {
+      showRoast();
+    }
+    schedulePeriodicRoast();
+  }, t);
+}
+toggleRoasts.addEventListener('click', ()=> {
+  if(roastsEnabled) schedulePeriodicRoast();
+  else {
+    if(periodicRoastTimer) clearTimeout(periodicRoastTimer);
+  }
+});
+
+// previous valid values for reverts
 let prevAttended = toInt(attendedEl.value);
 let prevWillAttend = toInt(willAttendEl.value);
 
-// thin update function (only minimal DOM writes)
+// Save/load state
+loadState();
+
+// minimal update function
 let lastState = {};
 function update(force){
   const total = toInt(totalEl.value);
@@ -221,43 +348,41 @@ function update(force){
   let willAttend = toInt(willAttendEl.value);
   const target = getTarget();
 
-  // typed invalids revert (no surprises)
-  if(attended > total){ attendedEl.value = prevAttended; attended = prevAttended; } else prevAttended = attended;
-  if(willAttend > upcoming){ willAttendEl.value = prevWillAttend; willAttend = prevWillAttend; } else prevWillAttend = willAttend;
+  // Revert typed invalids
+  if(attended > total){
+    attendedEl.value = prevAttended;
+    attended = prevAttended;
+    // roast when they try to exceed total
+    showRoast(pickRoast());
+  } else prevAttended = attended;
+
+  if(willAttend > upcoming){
+    willAttendEl.value = prevWillAttend;
+    willAttend = prevWillAttend;
+    showRoast(pickRoast());
+  } else prevWillAttend = willAttend;
 
   const safeAtt = Math.min(attended, total);
-  const curPct = +(pct(safeAtt, total).toFixed(2));
-
-  // only update DOM if changed from last state (minimize reflow)
-  const state = { total, attended: safeAtt, upcoming, willAttend, curPct, target };
+  const curPct = +(pct(safeAtt,total).toFixed(2));
+  const state = { total, safeAtt, upcoming, willAttend, curPct, target };
   if(!force && JSON.stringify(state) === JSON.stringify(lastState)) return;
   lastState = state;
 
-  // percent
   percentEl.textContent = curPct.toFixed(2) + '%';
 
-  // status badge
-  if(total === 0){
-    statusWrap.innerHTML = `<span class="status">—</span>`;
-  } else if(curPct >= target){
-    statusWrap.innerHTML = `<span class="status ok">ON</span>`;
-  } else {
-    statusWrap.innerHTML = `<span class="status low">LOW</span>`;
-  }
+  if(total === 0) statusWrap.innerHTML = `<span class="status">—</span>`;
+  else if(curPct >= target) statusWrap.innerHTML = `<span class="status ok">ON</span>`;
+  else statusWrap.innerHTML = `<span class="status low">LOW</span>`;
 
-  // projection
   const pTot = total + upcoming;
   const pAtt = safeAtt + willAttend;
   projEl.textContent = `${pAtt} / ${pTot} — ${ (pTot===0) ? '0.00%' : pct(pAtt,pTot).toFixed(2)+'%' }`;
 
-  // needed & bunk
   const needed = classesNeeded(attended, total, target);
   neededEl.textContent = needed === Infinity ? 'Impossible' : (needed + (needed===1 ? ' class' : ' classes'));
 
   if(total === 0 && attended === 0){
-    bunkLabel.textContent = 'You can bunk';
-    bunkCount.textContent = '—';
-    messageEl.textContent = 'Enter values';
+    bunkLabel.textContent = 'You can bunk'; bunkCount.textContent = '—'; messageEl.textContent='Enter values';
   } else if(curPct >= target){
     const bunk = maxBunk(attended, total, target);
     bunkLabel.textContent = 'You can bunk';
@@ -265,73 +390,56 @@ function update(force){
     messageEl.textContent = bunk > 0 ? `You can skip ${bunk} and still meet ${target}%.` : 'On track — keep it up.';
   } else {
     const needCount = needed === Infinity ? 'Impossible' : (needed + (needed===1 ? ' class' : ' classes'));
-    bunkLabel.textContent = 'You need';
-    bunkCount.textContent = needCount;
-    messageEl.textContent = 'Below target — attend more.';
+    bunkLabel.textContent = 'You need'; bunkCount.textContent = needCount; messageEl.textContent = 'Below target — attend more.';
   }
 
-  // persist
-  try{ localStorage.setItem(KEY, JSON.stringify({ total, attended, upcoming, willAttend, target })); }catch(e){}
+  saveState();
 }
 
-// target helpers
-function getTarget(){ const a = targets.find(t=>t.classList.contains('active')); return a ? Number(a.dataset.val) : 75; }
-function setTarget(v){
-  targets.forEach(t => {
-    const active = Number(t.dataset.val) === Number(v);
-    t.classList.toggle('active', active);
-    t.setAttribute('aria-pressed', active ? 'true' : 'false');
-  });
-  currentTargetEl.textContent = Number(v) + '%';
-  update(true);
-}
-targets.forEach(t => t.addEventListener('click', ()=>{ setTarget(t.dataset.val); }));
-
-// load saved state (fast)
-(function load(){
-  try{
-    const s = JSON.parse(localStorage.getItem(KEY) || '{}');
-    if(typeof s.total === 'number') totalEl.value = s.total;
-    if(typeof s.attended === 'number') attendedEl.value = s.attended;
-    if(typeof s.upcoming === 'number') upcomingEl.value = s.upcoming;
-    if(typeof s.willAttend === 'number') willAttendEl.value = s.willAttend;
-    if(typeof s.target === 'number') setTarget(s.target);
-  }catch(e){}
-  // ensure default target if none
-  if(!targets.some(t=>t.classList.contains('active'))) setTarget(75);
-  update(true);
-})();
-
-// Input event wiring (fast, minimal)
+// input protections wiring & roast triggers
 attendedEl.addEventListener('focus', ()=> prevAttended = toInt(attendedEl.value));
 attendedEl.addEventListener('input', ()=>{
   const entered = toInt(attendedEl.value), total = toInt(totalEl.value);
-  if(entered > total){ attendedEl.value = prevAttended; } else { prevAttended = entered; update(); }
+  if(entered > total){
+    attendedEl.value = prevAttended;
+    showRoast(pickRoast());
+  } else { prevAttended = entered; update(); }
 });
 
 willAttendEl.addEventListener('focus', ()=> prevWillAttend = toInt(willAttendEl.value));
 willAttendEl.addEventListener('input', ()=>{
   const entered = toInt(willAttendEl.value), upcoming = toInt(upcomingEl.value);
-  if(entered > upcoming){ willAttendEl.value = prevWillAttend; } else { prevWillAttend = entered; update(); }
+  if(entered > upcoming){
+    willAttendEl.value = prevWillAttend;
+    showRoast(pickRoast());
+  } else { prevWillAttend = entered; update(); }
 });
 
 totalEl.addEventListener('input', ()=>{
   const total = toInt(totalEl.value), attended = toInt(attendedEl.value);
-  if(attended > total){ attendedEl.value = total; prevAttended = total; }
+  if(attended > total){
+    attendedEl.value = total;
+    prevAttended = total;
+    showRoast(pickRoast());
+  }
   update();
 });
 upcomingEl.addEventListener('input', update);
 
-// buttons (touch friendly)
+// button behaviors — small chance to roast on clicks (15%)
+function maybeRoastOnClick(){ if(roastsEnabled && Math.random() < 0.15) showRoast(pickRoast()); }
+
 presentBtn.addEventListener('click', ()=>{
   totalEl.value = toInt(totalEl.value) + 1;
   attendedEl.value = toInt(attendedEl.value) + 1;
   prevAttended = toInt(attendedEl.value);
   update();
+  maybeRoastOnClick();
 });
 absentBtn.addEventListener('click', ()=>{
   totalEl.value = toInt(totalEl.value) + 1;
   update();
+  maybeRoastOnClick();
 });
 applyBtn.addEventListener('click', ()=>{
   const upcoming = toInt(upcomingEl.value);
@@ -341,46 +449,33 @@ applyBtn.addEventListener('click', ()=>{
   prevAttended = toInt(attendedEl.value);
   upcomingEl.value = ''; willAttendEl.value = '';
   update();
+  maybeRoastOnClick();
 });
 resetBtn.addEventListener('click', ()=>{
   if(confirm('Reset attendance data?')){
     totalEl.value = 0; attendedEl.value = 0; upcomingEl.value = ''; willAttendEl.value = '';
     setTarget(75);
     localStorage.removeItem(KEY);
+    prevAttended = 0; prevWillAttend = 0;
     update(true);
   }
 });
 
-// keyboard "done" helpfulness: when user finishes numeric input, immediately recalc
+// keyboard convenience
 [totalEl, attendedEl, upcomingEl, willAttendEl].forEach(inp=>{
   inp.addEventListener('keydown', (e) => {
     if(e.key === 'Enter'){ inp.blur(); update(); }
   });
 });
 
-// small accessibility: allow swipe-left/right to change target on small screens (optional convenience)
-let touchStartX = null;
-document.addEventListener('touchstart', (e) => {
-  if(e.touches && e.touches[0]) touchStartX = e.touches[0].clientX;
-}, {passive:true});
-document.addEventListener('touchend', (e) => {
-  if(touchStartX === null) return;
-  const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : null;
-  if(endX === null) return;
-  const dx = endX - touchStartX;
-  if(Math.abs(dx) > 60 && window.innerWidth < 760){
-    // change target - left swipe decreases, right swipe increases
-    const order = [75,80,85,90];
-    const current = getTarget();
-    const idx = order.indexOf(current);
-    if(dx < 0 && idx < order.length-1) setTarget(order[idx+1]);
-    if(dx > 0 && idx > 0) setTarget(order[idx-1]);
-  }
-  touchStartX = null;
-}, {passive:true});
-
-// initial update on load
-update(true);
+// initial load and periodic roast schedule
+(function init(){
+  if(!targets.some(t=>t.classList.contains('active'))) setTarget(75);
+  loadState();
+  update(true);
+  // start periodic roasts if enabled
+  if(roastsEnabled) schedulePeriodicRoast();
+})();
 
 </script>
 </body>
