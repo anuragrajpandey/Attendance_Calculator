@@ -1,961 +1,423 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>Attendance Calculator — EliteStocks</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Attendance Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-  :root{
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-shadow: rgba(31, 38, 135, 0.15);
-    --text-primary: #1a202c;
-    --text-secondary: #4a5568;
-    --text-muted: #718096;
-    --accent: #667eea;
-    --accent-hover: #5a67d8;
-    --success: #48bb78;
-    --danger: #f56565;
-    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --backdrop: #e6e9f0;
-    --radius: 16px;
-    --radius-sm: 12px;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --border: #E8E4DC;
+    --text: #1C1A17;
+    --muted: #8A857A;
+    --accent: #D4500A;
+    --safe: #1A7F4B;
+    --safe-bg: #EDF7F2;
+    --safe-border: #1A7F4B22;
+    --warn: #B45309;
+    --warn-bg: #FEF9EC;
+    --warn-border: #B4530922;
+    --danger: #C0392B;
+    --danger-bg: #FEF0EE;
+    --danger-border: #C0392B22;
+    --radius: 14px;
   }
-  
-  * {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  html, body {
-    height: 100%;
-    margin: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--backdrop);
-    background-image: 
-      radial-gradient(at 20% 30%, rgba(102, 126, 234, 0.15) 0px, transparent 50%),
-      radial-gradient(at 80% 70%, rgba(245, 87, 108, 0.15) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(118, 75, 162, 0.1) 0px, transparent 50%);
-    color: var(--text-primary);
-    -webkit-text-size-adjust: 100%;
-    overflow-x: hidden;
-  }
-  
+
   body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
-  }
-
-  .container {
-    width: 100%;
-    max-width: 1100px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-  }
-
-  /* Glass Card Styles */
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border-radius: var(--radius);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px var(--glass-shadow);
-  }
-
-  /* Header */
-  .header {
-    padding: 24px 28px;
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
+    padding: 3rem 1.25rem 5rem;
   }
 
-  .brand {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  .wrap { width: 100%; max-width: 440px; }
+
+  /* HEADER */
+  header { margin-bottom: 2.25rem; animation: up 0.5s ease both; }
+  .kicker {
+    font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.45rem; font-weight: 400;
+  }
+  h1 {
+    font-family: 'Fraunces', serif; font-size: 2.3rem; font-weight: 700;
+    line-height: 1.1; letter-spacing: -0.02em;
+  }
+  h1 em { font-style: italic; font-weight: 300; color: var(--accent); }
+  .subhead {
+    font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem;
+    line-height: 1.5; font-weight: 300;
   }
 
-  .brand-title {
-    font-size: 28px;
-    font-weight: 800;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.5px;
+  /* CARD */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.75rem;
+    animation: up 0.5s 0.08s ease both;
   }
 
-  .brand-by {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+  .sec-label {
+    font-size: 0.63rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.7rem; font-weight: 500;
   }
 
-  .brand-name {
-    color: var(--accent);
-    font-weight: 700;
+  /* CRITERIA */
+  .crit-row {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 0.45rem; margin-bottom: 1.75rem;
   }
-
-  .autosave-badge {
-    padding: 8px 16px;
-    background: rgba(102, 126, 234, 0.1);
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .c-btn {
+    background: none; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 0.65rem 0; cursor: pointer; font-family: 'Fraunces', serif;
+    font-size: 1.05rem; font-weight: 600; color: var(--muted);
+    transition: all 0.16s; width: 100%; text-align: center; display: block;
   }
-
-  .autosave-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--success);
-    border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
+  .c-btn span {
+    display: block; font-family: 'DM Sans', sans-serif; font-size: 0.58rem;
+    font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-top: 2px; opacity: 0.65;
   }
+  .c-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .c-btn.on { background: var(--text); border-color: var(--text); color: #fff; }
+  .c-btn.on span { color: #fff; opacity: 0.6; }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+  /* INPUTS */
+  .in-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 1.15rem; }
+  .field label {
+    display: block; font-size: 0.63rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; font-weight: 500;
   }
-
-  /* Main Content */
-  .content {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 0 0 20px 0;
+  .field input {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+    background: var(--bg); padding: 0.7rem 0.9rem; font-family: 'Fraunces', serif;
+    font-size: 1.55rem; font-weight: 600; color: var(--text); outline: none;
+    transition: border-color 0.16s; -moz-appearance: textfield;
   }
+  .field input::-webkit-outer-spin-button,
+  .field input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .field input::placeholder { color: #D5D0C8; }
+  .field input:focus { border-color: var(--accent); background: #fff; }
 
-  /* Sidebar */
-  .sidebar {
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  /* BUTTON */
+  .go-btn {
+    width: 100%; background: var(--text); color: #fff; border: none;
+    border-radius: 10px; padding: 0.875rem; font-family: 'DM Sans', sans-serif;
+    font-size: 0.83rem; font-weight: 500; letter-spacing: 0.05em;
+    cursor: pointer; transition: opacity 0.16s, transform 0.16s;
   }
+  .go-btn:hover { opacity: 0.82; transform: translateY(-1px); }
+  .go-btn:active { transform: translateY(0); }
 
-  .section-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
+  /* RESULT */
+  .result { margin-top: 1.1rem; display: none; }
+  .result.show { display: block; animation: up 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+  hr.sep { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
+
+  .pct-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 0.65rem; }
+  .big-pct {
+    font-family: 'Fraunces', serif; font-size: 4rem; font-weight: 700;
+    line-height: 1; letter-spacing: -0.04em; transition: color 0.3s;
   }
-
-  /* Targets */
-  .targets-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  .pill {
+    font-size: 0.66rem; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.32rem 0.7rem;
+    border-radius: 999px; display: inline-block; margin-bottom: 0.2rem;
   }
+  .status-txt { font-size: 0.76rem; color: var(--muted); display: block; text-align: right; font-weight: 300; }
 
-  .target-btn {
-    padding: 14px;
-    border: 2px solid rgba(102, 126, 234, 0.2);
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: var(--radius-sm);
-    font-weight: 800;
-    font-size: 16px;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+  .prog-track { background: var(--border); border-radius: 999px; height: 4px; overflow: hidden; margin-bottom: 1.15rem; }
+  .prog-fill  { height: 100%; border-radius: 999px; width: 0; transition: width 0.9s cubic-bezier(0.34,1.56,0.64,1); }
+
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.45rem; margin-bottom: 1.1rem; }
+  .stat { background: var(--bg); border-radius: 10px; padding: 0.7rem; text-align: center; }
+  .stat .v { font-family: 'Fraunces', serif; font-size: 1.35rem; font-weight: 600; line-height: 1; display: block; }
+  .stat .l  { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 3px; display: block; }
+
+  .bunk-box {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg); border-radius: 10px; padding: 0.9rem 1.1rem;
   }
+  .bunk-box .bl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; }
+  .bunk-box .bs { font-size: 0.7rem; color: var(--muted); font-weight: 300; margin-top: 2px; }
+  .bunk-box .bn { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 700; line-height: 1; }
 
-  .target-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--gradient-1);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  /* CONTEXTUAL MSG */
+  .msg-card {
+    border-radius: var(--radius); padding: 1.2rem 1.4rem;
+    margin-top: 1rem; display: none;
+    animation: up 0.45s 0.1s ease both;
   }
+  .msg-card.show { display: block; }
+  .msg-tag { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.45rem; display: block; opacity: 0.7; }
+  .msg-head { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.35rem; }
+  .msg-body { font-size: 0.78rem; line-height: 1.65; font-weight: 300; opacity: 0.88; }
 
-  .target-btn span {
-    position: relative;
-    z-index: 1;
+  /* QUOTE */
+  .quote-strip {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.2rem 1.4rem; margin-top: 1rem; cursor: pointer;
+    transition: border-color 0.2s; display: none;
+    animation: up 0.45s 0.18s ease both;
   }
+  .quote-strip.show { display: block; }
+  .quote-strip:hover { border-color: var(--accent); }
+  .q-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; font-weight: 500; }
+  .q-label span { opacity: 0.5; font-size: 0.58rem; }
+  .q-text { font-family: 'Fraunces', serif; font-size: 0.95rem; font-style: italic; font-weight: 300; line-height: 1.6; margin-bottom: 0.4rem; transition: opacity 0.25s; }
+  .q-author { font-size: 0.67rem; color: var(--muted); font-weight: 400; }
 
-  .target-btn:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-
-  .target-btn.active {
-    border-color: transparent;
-    color: white;
-  }
-
-  .target-btn.active::before {
-    opacity: 1;
-  }
-
-  /* Input Group */
-  .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .input-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
-
-  .input-field {
-    width: 100%;
-    padding: 14px 16px;
-    border: 2px solid rgba(102, 126, 234, 0.15);
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-
-  .input-field:focus {
-    outline: none;
-    border-color: var(--accent);
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  }
-
-  .input-field::placeholder {
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-
-  /* Buttons */
-  .btn-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .btn {
-    padding: 14px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-
-  .btn:active::before {
-    width: 300px;
-    height: 300px;
-  }
-
-  .btn span {
-    position: relative;
-    z-index: 1;
-  }
-
-  .btn-primary {
-    background: var(--gradient-1);
-    color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    transform: translateY(-2px);
-  }
-
-  .btn-secondary {
-    background: rgba(255, 255, 255, 0.6);
-    color: var(--text-primary);
-    border: 2px solid rgba(102, 126, 234, 0.2);
-  }
-
-  .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-
-  .btn-danger {
-    background: rgba(245, 101, 101, 0.1);
-    color: var(--danger);
-    border: 2px solid rgba(245, 101, 101, 0.3);
-  }
-
-  .btn-danger:hover {
-    background: rgba(245, 101, 101, 0.2);
-    border-color: var(--danger);
-  }
-
-  /* Main Display */
-  .main-display {
-    padding: 24px;
-  }
-
-  .stats-card {
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: var(--radius);
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .stats-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .percentage-display {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .percentage-value {
-    font-size: 56px;
-    font-weight: 900;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    letter-spacing: -2px;
-  }
-
-  .percentage-label {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-
-  .status-badge {
-    padding: 10px 20px;
-    border-radius: 999px;
-    font-weight: 800;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-  }
-
-  .status-ok {
-    background: rgba(72, 187, 120, 0.15);
-    color: var(--success);
-  }
-
-  .status-low {
-    background: rgba(245, 101, 101, 0.15);
-    color: var(--danger);
-  }
-
-  /* Info Grid */
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  .info-item {
-    background: rgba(102, 126, 234, 0.05);
-    border-radius: var(--radius-sm);
-    padding: 16px;
-  }
-
-  .info-label {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 600;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .info-value {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--text-primary);
-  }
-
-  /* Bunk Card */
-  .bunk-card {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-    border-radius: var(--radius-sm);
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .bunk-label {
-    font-size: 14px;
-    color: var(--text-secondary);
-    font-weight: 600;
-  }
-
-  .bunk-value {
-    font-size: 20px;
-    font-weight: 900;
-    color: var(--accent);
-  }
-
-  /* Message */
-  .message-box {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(245, 87, 108, 0.08) 100%);
-    border-radius: var(--radius-sm);
-    padding: 16px;
-    text-align: center;
-    font-weight: 700;
-    color: var(--text-primary);
-    font-size: 14px;
-  }
-
-  /* Footer */
-  .footer {
-    padding: 16px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid rgba(102, 126, 234, 0.1);
-  }
-
-  .footer-text {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-
-  .footer-target {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--accent);
-  }
-
-  /* Roast Modal */
-  .roast-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
+  /* FOOTER */
+  .footer-note {
+    margin-top: 2rem; text-align: center; font-size: 0.7rem;
+    color: var(--muted); font-weight: 300; line-height: 1.65;
     display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
   }
+  .footer-note.show { display: block; animation: up 0.4s 0.25s ease both; }
 
-  .roast-modal {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: var(--radius);
-    padding: 32px;
-    max-width: 500px;
-    width: 100%;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    animation: roastSlideIn 0.4s ease;
-    border: 2px solid rgba(245, 87, 108, 0.3);
-  }
-
-  @keyframes roastSlideIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9) translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-
-  .roast-text {
-    font-size: 18px;
-    line-height: 1.5;
-    color: #ffdeea;
-    font-weight: 800;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-
-  .roast-close {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-    border: none;
-    border-radius: var(--radius-sm);
-    color: white;
-    font-weight: 800;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .roast-close:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
-  }
-
-  /* Responsive */
-  @media (min-width: 768px) {
-    .content {
-      grid-template-columns: 380px 1fr;
-    }
-
-    .targets-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .info-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  @media (max-width: 767px) {
-    .header {
-      padding: 20px;
-    }
-
-    .brand-title {
-      font-size: 24px;
-    }
-
-    .percentage-value {
-      font-size: 48px;
-    }
-
-    .sidebar, .main-display {
-      padding: 20px;
-    }
-
-    .stats-card {
-      padding: 20px;
-    }
-  }
+  /* ANIMS */
+  @keyframes up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .err { animation: shake 0.35s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <div class="glass header">
-      <div class="brand">
-        <div class="brand-title">Attendance Calculator</div>
-        <div class="brand-by">by <span class="brand-name">EliteStocks</span></div>
-      </div>
-      <div class="autosave-badge">
-        <span class="autosave-dot"></span>
-        <span>Autosave</span>
-      </div>
+<div class="wrap">
+
+  <header>
+    <p class="kicker">Student Attendance Calculator</p>
+    <h1>Know your <em>limits</em><br/>before they do.</h1>
+    <p class="subhead">Enter your numbers. We'll handle the honesty.</p>
+  </header>
+
+  <div class="card">
+    <p class="sec-label">Minimum Required Attendance</p>
+    <div class="crit-row">
+      <button class="c-btn on" data-v="75" onclick="setCrit(this)">75%<span>Chill</span></button>
+      <button class="c-btn"    data-v="80" onclick="setCrit(this)">80%<span>Normal</span></button>
+      <button class="c-btn"    data-v="85" onclick="setCrit(this)">85%<span>Strict</span></button>
+      <button class="c-btn"    data-v="90" onclick="setCrit(this)">90%<span>Brutal</span></button>
     </div>
 
-    <!-- Main Content -->
-    <div class="content">
-      <!-- Sidebar -->
-      <div class="glass sidebar">
-        <div>
-          <div class="section-title">Target Percentage</div>
-          <div class="targets-grid" id="targets">
-            <button class="target-btn" data-val="75" aria-pressed="false">
-              <span>75%</span>
-            </button>
-            <button class="target-btn" data-val="80" aria-pressed="false">
-              <span>80%</span>
-            </button>
-            <button class="target-btn" data-val="85" aria-pressed="false">
-              <span>85%</span>
-            </button>
-            <button class="target-btn" data-val="90" aria-pressed="false">
-              <span>90%</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label" for="total">Total Classes</label>
-          <input id="total" class="input-field" type="number" inputmode="numeric" min="0" value="60" />
-        </div>
-
-        <div class="input-group">
-          <label class="input-label" for="attended">Classes Attended</label>
-          <input id="attended" class="input-field" type="number" inputmode="numeric" min="0" value="45" />
-        </div>
-
-        <div class="btn-row">
-          <button id="present" class="btn btn-primary">
-            <span>+ Present</span>
-          </button>
-          <button id="absent" class="btn btn-secondary">
-            <span>+ Absent</span>
-          </button>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label" for="upcoming">Upcoming Classes</label>
-          <input id="upcoming" class="input-field" type="number" inputmode="numeric" placeholder="Enter count" />
-        </div>
-
-        <div class="input-group">
-          <label class="input-label" for="willAttend">Will Attend</label>
-          <input id="willAttend" class="input-field" type="number" inputmode="numeric" placeholder="How many?" />
-        </div>
-
-        <div class="btn-row">
-          <button id="apply" class="btn btn-secondary">
-            <span>Apply</span>
-          </button>
-          <button id="reset" class="btn btn-danger">
-            <span>Reset</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Main Display -->
-      <div class="glass main-display">
-        <div class="stats-card">
-          <div class="stats-header">
-            <div class="percentage-display">
-              <div class="percentage-value" id="percent">0.00%</div>
-              <div class="percentage-label">Current Attendance</div>
-            </div>
-            <div id="statusWrap">
-              <span class="status-badge">—</span>
-            </div>
-          </div>
-
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">Projected</div>
-              <div class="info-value" id="proj">0 / 0 — 0.00%</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Needed</div>
-              <div class="info-value" id="needed">—</div>
-            </div>
-          </div>
-
-          <div class="bunk-card">
-            <div class="bunk-label" id="bunkLabel">You can bunk</div>
-            <div class="bunk-value" id="bunkCount">—</div>
-          </div>
-
-          <div class="message-box" id="message">—</div>
-        </div>
-      </div>
+    <p class="sec-label">Your Classes</p>
+    <div class="in-row">
+      <div class="field"><label>Attended</label><input id="att" type="number" placeholder="42" min="0" oninput="clearRes()"/></div>
+      <div class="field"><label>Total</label><input id="tot" type="number" placeholder="60" min="0" oninput="clearRes()"/></div>
     </div>
 
-    <!-- Footer -->
-    <div class="glass footer">
-      <div class="footer-text">EliteStocks © 2026</div>
-      <div class="footer-target" id="currentTarget">Target: 75%</div>
+    <button class="go-btn" onclick="calc()">Calculate →</button>
+
+    <div class="result" id="res">
+      <hr class="sep"/>
+      <div class="pct-row">
+        <div class="big-pct" id="bigPct">—</div>
+        <div style="text-align:right">
+          <div class="pill" id="pill">—</div>
+          <span class="status-txt" id="sTxt">—</span>
+        </div>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="pBar"></div></div>
+      <div class="stats-row">
+        <div class="stat"><span class="v" id="sA">—</span><span class="l">Attended</span></div>
+        <div class="stat"><span class="v" id="sM">—</span><span class="l">Missed</span></div>
+        <div class="stat"><span class="v" id="sT">—</span><span class="l">Total</span></div>
+      </div>
+      <div class="bunk-box">
+        <div><div class="bl" id="bL">Can still bunk</div><div class="bs" id="bS">and stay safe</div></div>
+        <div class="bn" id="bN">0</div>
+      </div>
     </div>
   </div>
 
-  <!-- Roast Modal -->
-  <div id="roastOverlay" class="roast-overlay">
-    <div class="roast-modal">
-      <div class="roast-text" id="roastText">You can't do that idiot. WTF are you doing?</div>
-      <button id="roastClose" class="roast-close">Got It</button>
-    </div>
+  <!-- Contextual message after calc -->
+  <div class="msg-card" id="msgCard">
+    <span class="msg-tag" id="mTag">—</span>
+    <div class="msg-head" id="mHead">—</div>
+    <p class="msg-body" id="mBody">—</p>
   </div>
 
+  <!-- Rotating quote after calc -->
+  <div class="quote-strip" id="qStrip" onclick="nextQ()">
+    <div class="q-label">From students who've been here <span>tap to refresh ↻</span></div>
+    <div class="q-text" id="qTxt">—</div>
+    <div class="q-author" id="qAuth">—</div>
+  </div>
+
+  <p class="footer-note" id="footNote">
+    We know you're here because you're thinking about bunking tomorrow.<br/>
+    That's fine. Just remember — the portal doesn't negotiate.
+  </p>
+
+</div>
 <script>
-/* Liquid Glass Attendance Calculator by EliteStocks */
+const PRAISE = [
+  { head: "You're actually doing great.", body: "Most students at this stage have burned through half their buffer already. You haven't. Keep showing up — consistency is the only thing that compounds in university." },
+  { head: "Attendance locked in. Don't ruin it.", body: "You've done the hard part: just showing up. The temptation to coast grows as the semester gets long. The buffer you build today protects you when you actually need it — sick days, travel, real emergencies." },
+  { head: "A+ on showing up, at least.", body: "Whatever happens in the exam, no one can take away the fact that you were there. Showing up is 90% of university. You're nailing the 90%. Keep the streak alive." },
+  { head: "Safe zone. Protect it.", body: "You're in a good place right now. But every bunk from here makes the number smaller. Use your buffer only when you genuinely have to — not just because Monday feels far away." },
+  { head: "You're the friend everyone asks notes from.", body: "Rare. Keep being that person. The semester isn't over, and the people who maintain this through the end are the ones who sit exams without panic." },
+  { head: "Solid. Now stay there.", body: "Getting to a safe percentage is one thing. Staying there when everyone else starts skipping is another. You're doing the first part well. The second part is where it counts." },
+];
 
-const $ = id => document.getElementById(id);
-const totalEl = $('total'), attendedEl = $('attended'), upcomingEl = $('upcoming'), willAttendEl = $('willAttend');
-const presentBtn = $('present'), absentBtn = $('absent'), applyBtn = $('apply'), resetBtn = $('reset');
-const percentEl = $('percent'), statusWrap = $('statusWrap'), projEl = $('proj'), neededEl = $('needed');
-const bunkLabel = $('bunkLabel'), bunkCount = $('bunkCount'), messageEl = $('message'), currentTargetEl = $('currentTarget');
-const targets = Array.from(document.querySelectorAll('.target-btn'));
-const roastOverlay = $('roastOverlay'), roastText = $('roastText'), roastClose = $('roastClose');
+const MOTIVATE = [
+  { head: "Time to run a recovery sprint.", body: "You're below the limit — but it's fixable. Attend every class from here without missing a single one. The number above is your target. Not tomorrow. Starting next class." },
+  { head: "The math is speaking. Listen.", body: "Right now, skipping even one more class makes recovery harder. The number shown is the minimum consecutive classes you need to attend to get back above the limit. No gaps. No 'I'll catch up later.'" },
+  { head: "Shortage means no hall ticket.", body: "No hall ticket means no exam. No exam means a very long, very difficult conversation with people who love you. You have time to fix this. Use it starting now." },
+  { head: "Every class from here counts double.", body: "In recovery mode, each class you attend brings the number down fast. Each one you miss sends it further away. Show up to the next one. Then the one after. That's the whole plan." },
+  { head: "Be the comeback story.", body: "Students have recovered from worse. It takes showing up every single day for the rest of the semester — not heroics, just presence. Presence is something you can absolutely do." },
+  { head: "You came here to check. Now go fix it.", body: "The fact that you're calculating means you're aware. Awareness is step one. Step two is closing this tab and walking into the next lecture. The number doesn't fix itself." },
+];
 
-const KEY = 'att_elitestocks_v1';
-function toInt(v){ const n = parseInt(String(v).replace(/[^\d-]/g,''),10); return isNaN(n) ? 0 : Math.max(0,n); }
-function pct(att, tot){ return tot <= 0 ? 0 : (att / tot) * 100; }
-function classesNeeded(att, tot, targetPct){
-  const t = targetPct/100;
-  if(pct(att,tot) >= targetPct) return 0;
-  if(t >= 1) return Infinity;
-  const numerator = t * tot - att;
-  const denom = 1 - t;
-  return Math.max(0, Math.ceil(numerator / denom));
+const QUOTES = [
+  { t: "I calculated I had 5 bunk days left. Used all 5. Then got sick. Didn't sit the exam.", a: "Former 3rd year, now repeating the semester" },
+  { t: "The one class I skipped because nothing important ever happens — the entire exam unit was covered.", a: "Overconfident student, underprepared for finals" },
+  { t: "My attendance was 74.8%. The requirement was 75%. Didn't get the hall ticket. 0.2% cost me 6 months.", a: "The cruelest kind of math" },
+  { t: "I thought getting notes from friends was the same as attending. It is not the same.", a: "Student who failed the practical component" },
+  { t: "Bunked to study for another exam. That exam was open book. Failed both anyway.", a: "Strategic mastermind, allegedly" },
+  { t: "Missed 3 lectures during a productive work-from-canteen phase. Cost me 12%.", a: "Canteen regular, exam irregular" },
+  { t: "I aimed for exactly 76%. There were more sick days than I had planned for.", a: "Plans vs. reality, a classic tale" },
+  { t: "The professor didn't take attendance most days. Except the days I bunked. Always exactly those days.", a: "Coincidence? Unlikely." },
+  { t: "Every bunk felt like a small victory. The shortage letter felt like everything else.", a: "Batch of 2023, wiser now" },
+  { t: "I skipped the 8AM thinking it didn't matter. The 8AM was where he explained the entire project rubric.", a: "Submitted the project wrong. Twice." },
+  { t: "Bunk one, feel free. Bunk ten, feel invincible. Bunk twenty, feel nothing. Shortage letter: feel everything at once.", a: "The complete arc, summarised" },
+  { t: "I had an elaborate excuse system. The portal had an attendance system. The portal won.", a: "Overdesigned strategy, underdelivered results" },
+  { t: "My friend group all bunked together. We all got detained together. Solidarity, I suppose.", a: "Group project in consequences" },
+  { t: "I asked the professor to consider my circumstances. She said the rule applies to everyone. It does.", a: "Learned about policy the hard way" },
+  { t: "Skipped the boring lectures. Turns out the boring ones had the most exam content. Every single time.", a: "Correlation everyone else already knew about" },
+  { t: "Used up my entire bunking budget in the first month. The rest of the semester was a 9AM attendance pilgrimage.", a: "Early spender, long-term sufferer" },
+  { t: "Thought I was managing it smartly. The spreadsheet said yes. The portal said no.", a: "Spreadsheet lied. Portal didn't." },
+  { t: "Took a mental health day. Then another. Then I needed a mental health day because of my attendance.", a: "The loop nobody wants to be in" },
+  { t: "I know you are here because you are planning to bunk. I was too. I wish someone had stopped me.", a: "Person who wrote this calculator" },
+  { t: "The class you skip is always the one that was actually interesting. Without exception.", a: "Observed across four semesters" },
+];
+
+let crit = 75, qIdx = Math.floor(Math.random() * QUOTES.length);
+
+function setCrit(btn) {
+  document.querySelectorAll('.c-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  crit = +btn.dataset.v;
+  clearRes();
 }
-function maxBunk(att, tot, targetPct){
-  const t = targetPct/100;
-  if(t === 0) return Infinity;
-  if(pct(att,tot) < targetPct) return 0;
-  const raw = (att - t*tot)/t;
-  return Math.max(0, Math.floor(raw));
-}
 
-// Targets
-function setTarget(v){
-  targets.forEach(t => {
-    const active = Number(t.dataset.val) === Number(v);
-    t.classList.toggle('active', active);
-    t.setAttribute('aria-pressed', active ? 'true' : 'false');
+function clearRes() {
+  document.getElementById('res').classList.remove('show');
+  document.getElementById('res').style.display = 'none';
+  ['msgCard','qStrip','footNote'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
   });
-  currentTargetEl.textContent = 'Target: ' + Number(v) + '%';
-  update(true);
 }
-function getTarget(){ const a = targets.find(t => t.classList.contains('active')); return a ? Number(a.dataset.val) : 75; }
-targets.forEach(t => t.addEventListener('click', ()=> setTarget(t.dataset.val)));
 
-// Roast messages
-let ROAST_POOL = null;
-function buildRoastPool(n){
-  if(ROAST_POOL && ROAST_POOL.length >= n) return ROAST_POOL;
-  const starts = ["You can't do that", "You can't be serious", "What the fuck are you doing", "Sir, stop", "Stop right now", "Who told you to do that", "Are you for real", "You absolute idiot"];
-  const middles = [
-    "you can't enter more presents than total.",
-    "you can't set attended higher than total.",
-    "that's not how this works.",
-    "this makes no sense at all.",
-    "you're breaking logic here.",
-    "you're trying nonsense inputs.",
-    "you're being dumb with numbers."
-  ];
-  const jabs = [
-    "You look like a fucking crazy person.",
-    "You can't do that idiot.",
-    "WTF are you doing?",
-    "Bro, stop acting dumb.",
-    "This is nonsense, fix it.",
-    "You're trying to cheat reality, stop.",
-    "Seriously, what are you thinking?"
-  ];
-  ROAST_POOL = [];
-  const used = new Set();
-  let attempts = 0;
-  while(ROAST_POOL.length < n && attempts < n * 12){
-    const a = starts[Math.floor(Math.random()*starts.length)];
-    const b = middles[Math.floor(Math.random()*middles.length)];
-    const c = jabs[Math.floor(Math.random()*jabs.length)];
-    let msg = `${a} — ${b} ${Math.random()<0.5 ? c : ''}`.trim();
-    msg = msg.replace(/\s+/g,' ').replace(/\s+—\s+$/,'').trim();
-    if(Math.random() < 0.25) msg = msg.replace(/\.$/,'') + (Math.random()<0.5 ? '!' : '...');
-    if(msg.length > 6 && !used.has(msg)){
-      used.add(msg);
-      ROAST_POOL.push(msg);
-    }
-    attempts++;
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function nextQ() {
+  qIdx = (qIdx + 1) % QUOTES.length;
+  const el = document.getElementById('qTxt');
+  el.style.opacity = 0;
+  setTimeout(() => {
+    el.textContent = '\u201C' + QUOTES[qIdx].t + '\u201D';
+    document.getElementById('qAuth').textContent = '— ' + QUOTES[qIdx].a;
+    el.style.opacity = 1;
+  }, 200);
+}
+
+function calc() {
+  const att = parseInt(document.getElementById('att').value);
+  const tot = parseInt(document.getElementById('tot').value);
+
+  if (isNaN(att) || isNaN(tot) || tot <= 0 || att < 0) {
+    ['att','tot'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('err'); void el.offsetWidth; el.classList.add('err');
+    });
+    return;
   }
-  while(ROAST_POOL.length < n){
-    ROAST_POOL.push(`You can't do that idiot. Stop it. (${ROAST_POOL.length+1})`);
-  }
-  return ROAST_POOL;
-}
-function pickRoast(){
-  buildRoastPool(500);
-  return ROAST_POOL[Math.floor(Math.random()*ROAST_POOL.length)];
-}
+  if (att > tot) { alert("Attended classes can't exceed total."); return; }
 
-// Roast UI
-let roastTimer = null;
-function showRoast(msg){
-  roastText.textContent = msg || pickRoast();
-  roastOverlay.style.display = 'flex';
-  if(roastTimer) clearTimeout(roastTimer);
-  roastTimer = setTimeout(()=>{ roastOverlay.style.display = 'none'; }, 4200);
-}
-roastClose.addEventListener('click', ()=>{ roastOverlay.style.display = 'none'; });
-roastOverlay.addEventListener('click', (e)=>{ if(e.target === roastOverlay) roastOverlay.style.display = 'none'; });
+  const pct = (att / tot) * 100;
+  const pR  = Math.round(pct * 10) / 10;
+  const m   = crit / 100;
+  const safe = pct >= crit;
 
-// Persistence
-function saveState(){
-  try{
-    localStorage.setItem(KEY, JSON.stringify({
-      total: toInt(totalEl.value),
-      attended: toInt(attendedEl.value),
-      upcoming: toInt(upcomingEl.value),
-      willAttend: toInt(willAttendEl.value),
-      target: getTarget()
-    }));
-  }catch(e){}
-}
-function loadState(){
-  try{
-    const s = JSON.parse(localStorage.getItem(KEY) || '{}');
-    if(typeof s.total === 'number') totalEl.value = s.total;
-    if(typeof s.attended === 'number') attendedEl.value = s.attended;
-    if(typeof s.upcoming === 'number') upcomingEl.value = s.upcoming;
-    if(typeof s.willAttend === 'number') willAttendEl.value = s.willAttend;
-    if(typeof s.target === 'number') setTarget(s.target);
-  }catch(e){}
-}
+  const canBunk = safe ? Math.max(0, Math.floor((att - m * tot) / m)) : 0;
+  const needed  = !safe ? Math.ceil((m * tot - att) / (1 - m)) : 0;
 
-let prevAttended = toInt(attendedEl.value);
-let prevWillAttend = toInt(willAttendEl.value);
-
-// Update
-let lastState = {};
-function update(force){
-  const total = toInt(totalEl.value);
-  let attended = toInt(attendedEl.value);
-  const upcoming = toInt(upcomingEl.value);
-  let willAttend = toInt(willAttendEl.value);
-  const target = getTarget();
-
-  if(attended > total){
-    attendedEl.value = prevAttended;
-    attended = prevAttended;
-    showRoast(pickRoast());
+  let col, pStyle, status;
+  if (pct >= crit + 10) {
+    col = 'var(--safe)'; status = 'Comfortably safe';
+    pStyle = 'background:var(--safe-bg);color:var(--safe);';
+  } else if (pct >= crit) {
+    col = 'var(--warn)'; status = 'Just above limit';
+    pStyle = 'background:var(--warn-bg);color:var(--warn);';
   } else {
-    prevAttended = attended;
+    col = 'var(--danger)'; status = 'Below required';
+    pStyle = 'background:var(--danger-bg);color:var(--danger);';
   }
 
-  if(willAttend > upcoming){
-    willAttendEl.value = prevWillAttend;
-    willAttend = prevWillAttend;
+  document.getElementById('bigPct').textContent = pR.toFixed(1) + '%';
+  document.getElementById('bigPct').style.color = col;
+  const pill = document.getElementById('pill');
+  pill.textContent = safe ? '✓ Safe' : '✗ Shortage';
+  pill.style.cssText = pStyle;
+  document.getElementById('sTxt').textContent = status;
+
+  const pBar = document.getElementById('pBar');
+  pBar.style.background = col;
+  setTimeout(() => pBar.style.width = Math.min(100, pR) + '%', 40);
+
+  document.getElementById('sA').textContent = att;
+  document.getElementById('sM').textContent = tot - att;
+  document.getElementById('sT').textContent = tot;
+
+  if (safe) {
+    document.getElementById('bL').textContent = 'Can still bunk';
+    document.getElementById('bS').textContent = `and stay above ${crit}%`;
+    document.getElementById('bN').textContent = canBunk;
+    document.getElementById('bN').style.color = canBunk > 0 ? col : 'var(--danger)';
   } else {
-    prevWillAttend = willAttend;
+    document.getElementById('bL').textContent = 'Must attend';
+    document.getElementById('bS').textContent = 'consecutive classes to recover';
+    document.getElementById('bN').textContent = needed;
+    document.getElementById('bN').style.color = 'var(--danger)';
   }
 
-  const safeAtt = Math.min(attended, total);
-  const curPct = +(pct(safeAtt, total).toFixed(2));
-  const state = { total, safeAtt, upcoming, willAttend, curPct, target };
-  if(!force && JSON.stringify(state) === JSON.stringify(lastState)) return;
-  lastState = state;
+  const res = document.getElementById('res');
+  res.style.display = 'block'; void res.offsetWidth; res.classList.add('show');
 
-  percentEl.textContent = curPct.toFixed(2) + '%';
-  if(total === 0) statusWrap.innerHTML = `<span class="status-badge">—</span>`;
-  else if(curPct >= target) statusWrap.innerHTML = `<span class="status-badge status-ok">ON TRACK</span>`;
-  else statusWrap.innerHTML = `<span class="status-badge status-low">BELOW</span>`;
+  // Contextual message
+  const data = safe ? pick(PRAISE) : pick(MOTIVATE);
+  const mc = document.getElementById('msgCard');
+  const msgColours = safe
+    ? (pct >= crit + 10
+        ? { bg: 'var(--safe-bg)', border: 'var(--safe-border)', col: 'var(--safe)', text: '#0F4F2E' }
+        : { bg: 'var(--warn-bg)', border: 'var(--warn-border)', col: 'var(--warn)', text: '#6B3A05' })
+    : { bg: 'var(--danger-bg)', border: 'var(--danger-border)', col: 'var(--danger)', text: '#6B1D18' };
 
-  const pTot = total + upcoming;
-  const pAtt = safeAtt + willAttend;
-  projEl.textContent = `${pAtt} / ${pTot} — ${ (pTot===0) ? '0.00%' : pct(pAtt,pTot).toFixed(2)+'%' }`;
+  mc.style.cssText = `display:block; background:${msgColours.bg}; border:1px solid ${msgColours.border}; color:${msgColours.text};`;
+  document.getElementById('mTag').textContent = safe ? 'You\'re on track' : 'Recovery needed';
+  document.getElementById('mTag').style.color = msgColours.col;
+  document.getElementById('mHead').textContent = data.head;
+  document.getElementById('mBody').textContent = data.body;
+  mc.classList.remove('show'); void mc.offsetWidth; mc.classList.add('show');
 
-  const needed = classesNeeded(attended, total, target);
-  neededEl.textContent = needed === Infinity ? 'Impossible' : (needed + (needed===1 ? ' class' : ' classes'));
+  // Quote
+  const q = QUOTES[qIdx];
+  document.getElementById('qTxt').textContent   = '\u201C' + q.t + '\u201D';
+  document.getElementById('qTxt').style.opacity = 1;
+  document.getElementById('qAuth').textContent  = '— ' + q.a;
+  const qs = document.getElementById('qStrip');
+  qs.classList.remove('show'); void qs.offsetWidth; qs.classList.add('show');
 
-  if(total === 0 && attended === 0){
-    bunkLabel.textContent = 'You can bunk';
-    bunkCount.textContent = '—';
-    messageEl.textContent='Enter your attendance data to get started';
-  } else if(curPct >= target){
-    const bunk = maxBunk(attended, total, target);
-    bunkLabel.textContent = 'You can bunk';
-    bunkCount.textContent = (bunk === Infinity) ? 'Many' : (bunk + (bunk===1 ? ' class' : ' classes'));
-    messageEl.textContent = bunk > 0 ? `You can skip ${bunk} ${bunk===1?'class':'classes'} and still meet ${target}%` : 'On track — keep it up!';
-  } else {
-    const needCount = needed === Infinity ? 'Impossible' : (needed + (needed===1 ? ' class' : ' classes'));
-    bunkLabel.textContent = 'You need';
-    bunkCount.textContent = needCount;
-    messageEl.textContent = 'Below target — attend more classes to improve';
-  }
-
-  saveState();
+  const fn = document.getElementById('footNote');
+  fn.classList.remove('show'); void fn.offsetWidth; fn.classList.add('show');
 }
-
-// Event listeners
-attendedEl.addEventListener('focus', ()=> prevAttended = toInt(attendedEl.value));
-attendedEl.addEventListener('input', ()=>{ update(); });
-
-willAttendEl.addEventListener('focus', ()=> prevWillAttend = toInt(willAttendEl.value));
-willAttendEl.addEventListener('input', ()=>{
-  const entered = toInt(willAttendEl.value), upcoming = toInt(upcomingEl.value);
-  if(entered > upcoming){ willAttendEl.value = prevWillAttend; } else { prevWillAttend = entered; update(); }
-});
-
-totalEl.addEventListener('input', ()=>{
-  const total = toInt(totalEl.value), attended = toInt(attendedEl.value);
-  if(attended > total){
-    attendedEl.value = total;
-    prevAttended = total;
-  }
-  update();
-});
-upcomingEl.addEventListener('input', update);
-
-presentBtn.addEventListener('click', ()=>{
-  totalEl.value = toInt(totalEl.value) + 1;
-  attendedEl.value = toInt(attendedEl.value) + 1;
-  prevAttended = toInt(attendedEl.value);
-  update();
-});
-
-absentBtn.addEventListener('click', ()=>{
-  totalEl.value = toInt(totalEl.value) + 1;
-  update();
-});
-
-applyBtn.addEventListener('click', ()=>{
-  const upcoming = toInt(upcomingEl.value);
-  const willAttend = Math.min(toInt(willAttendEl.value), upcoming);
-  totalEl.value = toInt(totalEl.value) + upcoming;
-  attendedEl.value = toInt(attendedEl.value) + willAttend;
-  prevAttended = toInt(attendedEl.value);
-  upcomingEl.value = '';
-  willAttendEl.value = '';
-  update();
-});
-
-resetBtn.addEventListener('click', ()=>{
-  if(confirm('Reset all attendance data?')){
-    totalEl.value = 0;
-    attendedEl.value = 0;
-    upcomingEl.value = '';
-    willAttendEl.value = '';
-    setTarget(75);
-    localStorage.removeItem(KEY);
-    prevAttended = 0;
-    prevWillAttend = 0;
-    update(true);
-  }
-});
-
-[totalEl, attendedEl, upcomingEl, willAttendEl].forEach(inp=>{
-  inp.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter'){ inp.blur(); update(); }
-  });
-});
-
-// Init
-function loadAndStart(){
-  loadState();
-  if(!targets.some(t=>t.classList.contains('active'))) setTarget(75);
-  update(true);
-}
-loadAndStart();
 </script>
 </body>
 </html>
