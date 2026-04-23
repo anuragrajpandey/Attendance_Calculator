@@ -1,423 +1,453 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Attendance Calculator</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Attendance — EliteStocks</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent!important;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
 
-  :root {
-    --bg: #F7F5F0;
-    --surface: #FFFFFF;
-    --border: #E8E4DC;
-    --text: #1C1A17;
-    --muted: #8A857A;
-    --accent: #D4500A;
-    --safe: #1A7F4B;
-    --safe-bg: #EDF7F2;
-    --safe-border: #1A7F4B22;
-    --warn: #B45309;
-    --warn-bg: #FEF9EC;
-    --warn-border: #B4530922;
-    --danger: #C0392B;
-    --danger-bg: #FEF0EE;
-    --danger-border: #C0392B22;
-    --radius: 14px;
-  }
+:root{
+  --bg:#F2F2F7;
+  --card:#FFFFFF;
+  --card2:#F2F2F7;
+  --sep:rgba(60,60,67,0.12);
+  --label:rgba(60,60,67,0.6);
+  --label2:rgba(60,60,67,0.36);
+  --primary:#007AFF;
+  --primary-bg:rgba(0,122,255,0.1);
+  --green:#34C759;
+  --green-bg:rgba(52,199,89,0.12);
+  --red:#FF3B30;
+  --red-bg:rgba(255,59,48,0.12);
+  --orange:#FF9500;
+  --t1:#000000;
+  --t2:rgba(60,60,67,0.6);
+  --t3:rgba(60,60,67,0.36);
+  --seg-bg:rgba(118,118,128,0.12);
+  --seg-thumb:#FFFFFF;
+  --radius:12px;
+  --radius-lg:18px;
+  --radius-xl:22px;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 3rem 1.25rem 5rem;
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#000000;
+    --card:#1C1C1E;
+    --card2:#2C2C2E;
+    --sep:rgba(84,84,88,0.65);
+    --label:rgba(235,235,245,0.6);
+    --label2:rgba(235,235,245,0.3);
+    --t1:#FFFFFF;
+    --t2:rgba(235,235,245,0.6);
+    --t3:rgba(235,235,245,0.3);
+    --seg-bg:rgba(118,118,128,0.24);
+    --seg-thumb:#3A3A3C;
+    --primary-bg:rgba(0,122,255,0.18);
+    --green-bg:rgba(52,199,89,0.18);
+    --red-bg:rgba(255,59,48,0.18);
   }
+}
 
-  .wrap { width: 100%; max-width: 440px; }
+html,body{margin:0;padding:0;min-height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;color:var(--t1);-webkit-font-smoothing:antialiased}
 
-  /* HEADER */
-  header { margin-bottom: 2.25rem; animation: up 0.5s ease both; }
-  .kicker {
-    font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 0.45rem; font-weight: 400;
-  }
-  h1 {
-    font-family: 'Fraunces', serif; font-size: 2.3rem; font-weight: 700;
-    line-height: 1.1; letter-spacing: -0.02em;
-  }
-  h1 em { font-style: italic; font-weight: 300; color: var(--accent); }
-  .subhead {
-    font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem;
-    line-height: 1.5; font-weight: 300;
-  }
+body{display:flex;flex-direction:column;align-items:center;padding:0 0 60px}
 
-  /* CARD */
-  .card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 1.75rem;
-    animation: up 0.5s 0.08s ease both;
-  }
+/* Nav */
+.nav{width:100%;max-width:430px;padding:56px 20px 8px;display:flex;flex-direction:column;gap:2px}
+.nav-title{font-size:34px;font-weight:700;letter-spacing:-0.5px;color:var(--t1)}
+.nav-sub{font-size:13px;color:var(--label);font-weight:500;letter-spacing:0.1px}
 
-  .sec-label {
-    font-size: 0.63rem; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 0.7rem; font-weight: 500;
-  }
+.wrap{width:100%;max-width:430px;padding:0 16px;display:flex;flex-direction:column;gap:20px}
 
-  /* CRITERIA */
-  .crit-row {
-    display: grid; grid-template-columns: repeat(4,1fr);
-    gap: 0.45rem; margin-bottom: 1.75rem;
-  }
-  .c-btn {
-    background: none; border: 1.5px solid var(--border); border-radius: 10px;
-    padding: 0.65rem 0; cursor: pointer; font-family: 'Fraunces', serif;
-    font-size: 1.05rem; font-weight: 600; color: var(--muted);
-    transition: all 0.16s; width: 100%; text-align: center; display: block;
-  }
-  .c-btn span {
-    display: block; font-family: 'DM Sans', sans-serif; font-size: 0.58rem;
-    font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); margin-top: 2px; opacity: 0.65;
-  }
-  .c-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .c-btn.on { background: var(--text); border-color: var(--text); color: #fff; }
-  .c-btn.on span { color: #fff; opacity: 0.6; }
+/* Ring Hero */
+.hero{background:var(--card);border-radius:var(--radius-xl);padding:32px 20px 28px;display:flex;flex-direction:column;align-items:center;gap:20px}
 
-  /* INPUTS */
-  .in-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 1.15rem; }
-  .field label {
-    display: block; font-size: 0.63rem; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; font-weight: 500;
-  }
-  .field input {
-    width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
-    background: var(--bg); padding: 0.7rem 0.9rem; font-family: 'Fraunces', serif;
-    font-size: 1.55rem; font-weight: 600; color: var(--text); outline: none;
-    transition: border-color 0.16s; -moz-appearance: textfield;
-  }
-  .field input::-webkit-outer-spin-button,
-  .field input::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .field input::placeholder { color: #D5D0C8; }
-  .field input:focus { border-color: var(--accent); background: #fff; }
+.ring-wrap{position:relative;width:180px;height:180px}
+.ring-wrap svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.ring-pct{font-size:40px;font-weight:700;letter-spacing:-1.5px;color:var(--t1);line-height:1}
+.ring-label{font-size:11px;font-weight:600;color:var(--label);letter-spacing:0.5px;text-transform:uppercase}
 
-  /* BUTTON */
-  .go-btn {
-    width: 100%; background: var(--text); color: #fff; border: none;
-    border-radius: 10px; padding: 0.875rem; font-family: 'DM Sans', sans-serif;
-    font-size: 0.83rem; font-weight: 500; letter-spacing: 0.05em;
-    cursor: pointer; transition: opacity 0.16s, transform 0.16s;
-  }
-  .go-btn:hover { opacity: 0.82; transform: translateY(-1px); }
-  .go-btn:active { transform: translateY(0); }
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:0.1px}
+.status-pill .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-on{background:var(--green-bg);color:var(--green)}
+.status-on .dot{background:var(--green)}
+.status-low{background:var(--red-bg);color:var(--red)}
+.status-low .dot{background:var(--red)}
+.status-na{background:var(--seg-bg);color:var(--t2)}
+.status-na .dot{background:var(--t3)}
 
-  /* RESULT */
-  .result { margin-top: 1.1rem; display: none; }
-  .result.show { display: block; animation: up 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
+/* Stat Row */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.stat-box{background:var(--card2);border-radius:var(--radius);padding:14px 16px}
+.stat-box-label{font-size:11px;font-weight:600;color:var(--label);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.stat-box-val{font-size:17px;font-weight:600;color:var(--t1);letter-spacing:-0.3px}
 
-  hr.sep { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
+/* Bunk bar */
+.bunk-bar{background:var(--primary-bg);border-radius:var(--radius);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;width:100%}
+.bunk-label{font-size:14px;font-weight:500;color:var(--primary)}
+.bunk-val{font-size:18px;font-weight:700;color:var(--primary);letter-spacing:-0.3px}
 
-  .pct-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 0.65rem; }
-  .big-pct {
-    font-family: 'Fraunces', serif; font-size: 4rem; font-weight: 700;
-    line-height: 1; letter-spacing: -0.04em; transition: color 0.3s;
-  }
-  .pill {
-    font-size: 0.66rem; font-weight: 500; letter-spacing: 0.1em;
-    text-transform: uppercase; padding: 0.32rem 0.7rem;
-    border-radius: 999px; display: inline-block; margin-bottom: 0.2rem;
-  }
-  .status-txt { font-size: 0.76rem; color: var(--muted); display: block; text-align: right; font-weight: 300; }
+/* Message */
+.msg{font-size:13px;color:var(--label);text-align:center;font-weight:500;line-height:1.4;width:100%;padding:0 4px}
 
-  .prog-track { background: var(--border); border-radius: 999px; height: 4px; overflow: hidden; margin-bottom: 1.15rem; }
-  .prog-fill  { height: 100%; border-radius: 999px; width: 0; transition: width 0.9s cubic-bezier(0.34,1.56,0.64,1); }
+/* Section header */
+.section-hdr{font-size:13px;font-weight:600;color:var(--label);text-transform:uppercase;letter-spacing:0.5px;padding:0 6px 6px}
 
-  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.45rem; margin-bottom: 1.1rem; }
-  .stat { background: var(--bg); border-radius: 10px; padding: 0.7rem; text-align: center; }
-  .stat .v { font-family: 'Fraunces', serif; font-size: 1.35rem; font-weight: 600; line-height: 1; display: block; }
-  .stat .l  { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 3px; display: block; }
+/* Segmented control */
+.seg{background:var(--seg-bg);border-radius:10px;padding:2px;display:grid;grid-template-columns:repeat(4,1fr);position:relative}
+.seg-opt{padding:6px 4px;text-align:center;font-size:14px;font-weight:600;color:var(--t2);border-radius:8px;cursor:pointer;transition:color 0.2s;position:relative;z-index:1;-webkit-tap-highlight-color:transparent}
+.seg-opt.active{color:var(--t1)}
+.seg-thumb-el{position:absolute;top:2px;bottom:2px;left:2px;width:calc(25% - 2px);background:var(--seg-thumb);border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.12),0 0 1px rgba(0,0,0,0.06);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
 
-  .bunk-box {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--bg); border-radius: 10px; padding: 0.9rem 1.1rem;
-  }
-  .bunk-box .bl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; }
-  .bunk-box .bs { font-size: 0.7rem; color: var(--muted); font-weight: 300; margin-top: 2px; }
-  .bunk-box .bn { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 700; line-height: 1; }
+/* Card list */
+.list-card{background:var(--card);border-radius:var(--radius-lg);overflow:hidden}
+.list-row{display:flex;align-items:center;padding:14px 18px;gap:14px;position:relative}
+.list-row+.list-row::before{content:'';position:absolute;top:0;left:18px;right:0;height:0.5px;background:var(--sep)}
+.list-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.list-icon.blue{background:var(--primary-bg)}
+.list-icon.green{background:var(--green-bg)}
+.list-icon.red{background:var(--red-bg)}
+.list-icon.orange{background:rgba(255,149,0,0.12)}
+.list-text{flex:1;min-width:0}
+.list-text-label{font-size:16px;color:var(--t1);font-weight:400}
+.list-input{border:none;background:transparent;font-size:16px;font-weight:500;color:var(--t1);text-align:right;width:100px;outline:none;padding:0;font-family:inherit;-webkit-appearance:none}
+.list-input::placeholder{color:var(--t3)}
+.list-input:focus{color:var(--primary)}
 
-  /* CONTEXTUAL MSG */
-  .msg-card {
-    border-radius: var(--radius); padding: 1.2rem 1.4rem;
-    margin-top: 1rem; display: none;
-    animation: up 0.45s 0.1s ease both;
-  }
-  .msg-card.show { display: block; }
-  .msg-tag { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.45rem; display: block; opacity: 0.7; }
-  .msg-head { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.35rem; }
-  .msg-body { font-size: 0.78rem; line-height: 1.65; font-weight: 300; opacity: 0.88; }
+/* Big action buttons */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.action-btn{padding:16px;border:none;border-radius:var(--radius-lg);font-size:16px;font-weight:600;cursor:pointer;transition:transform 0.1s cubic-bezier(0.34,1.56,0.64,1),opacity 0.1s;-webkit-tap-highlight-color:transparent;font-family:inherit;letter-spacing:-0.1px}
+.action-btn:active{transform:scale(0.95);opacity:0.8}
+.btn-present{background:var(--green-bg);color:var(--green)}
+.btn-absent{background:var(--red-bg);color:var(--red)}
+.btn-apply{background:var(--primary-bg);color:var(--primary)}
+.btn-reset{background:var(--seg-bg);color:var(--t2)}
 
-  /* QUOTE */
-  .quote-strip {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 1.2rem 1.4rem; margin-top: 1rem; cursor: pointer;
-    transition: border-color 0.2s; display: none;
-    animation: up 0.45s 0.18s ease both;
-  }
-  .quote-strip.show { display: block; }
-  .quote-strip:hover { border-color: var(--accent); }
-  .q-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; font-weight: 500; }
-  .q-label span { opacity: 0.5; font-size: 0.58rem; }
-  .q-text { font-family: 'Fraunces', serif; font-size: 0.95rem; font-style: italic; font-weight: 300; line-height: 1.6; margin-bottom: 0.4rem; transition: opacity 0.25s; }
-  .q-author { font-size: 0.67rem; color: var(--muted); font-weight: 400; }
+/* Roast */
+.roast-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center;z-index:9999;padding:20px}
+.roast-sheet{background:var(--card);border-radius:var(--radius-xl);padding:28px 24px 20px;max-width:400px;width:100%;animation:sheetUp 0.4s cubic-bezier(0.34,1.2,0.64,1)}
+@keyframes sheetUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.roast-emoji{font-size:40px;text-align:center;margin-bottom:12px;display:block;-webkit-user-select:none;user-select:none}
+.roast-title{font-size:20px;font-weight:700;text-align:center;color:var(--t1);margin-bottom:8px}
+.roast-body{font-size:15px;color:var(--t2);text-align:center;line-height:1.5;margin-bottom:24px}
+.roast-ok{width:100%;padding:16px;background:var(--primary);border:none;border-radius:var(--radius-lg);color:#fff;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.roast-ok:active{opacity:0.8}
 
-  /* FOOTER */
-  .footer-note {
-    margin-top: 2rem; text-align: center; font-size: 0.7rem;
-    color: var(--muted); font-weight: 300; line-height: 1.65;
-    display: none;
-  }
-  .footer-note.show { display: block; animation: up 0.4s 0.25s ease both; }
-
-  /* ANIMS */
-  @keyframes up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  .err { animation: shake 0.35s ease; }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+/* Footer brand */
+.footer{width:100%;max-width:430px;padding:0 20px;display:flex;justify-content:center}
+.footer-brand{font-size:12px;color:var(--t3);font-weight:500;letter-spacing:0.3px}
 </style>
 </head>
 <body>
+
+<div class="nav">
+  <div class="nav-title">Attendance</div>
+  <div class="nav-sub">by EliteStocks · <span id="currentTarget">75% target</span></div>
+</div>
+
 <div class="wrap">
 
-  <header>
-    <p class="kicker">Student Attendance Calculator</p>
-    <h1>Know your <em>limits</em><br/>before they do.</h1>
-    <p class="subhead">Enter your numbers. We'll handle the honesty.</p>
-  </header>
-
-  <div class="card">
-    <p class="sec-label">Minimum Required Attendance</p>
-    <div class="crit-row">
-      <button class="c-btn on" data-v="75" onclick="setCrit(this)">75%<span>Chill</span></button>
-      <button class="c-btn"    data-v="80" onclick="setCrit(this)">80%<span>Normal</span></button>
-      <button class="c-btn"    data-v="85" onclick="setCrit(this)">85%<span>Strict</span></button>
-      <button class="c-btn"    data-v="90" onclick="setCrit(this)">90%<span>Brutal</span></button>
+  <!-- Hero Ring Card -->
+  <div class="hero">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="90" cy="90" r="76" stroke="var(--seg-bg)" stroke-width="16" stroke-linecap="round"/>
+        <circle id="ringTrack" cx="90" cy="90" r="76" stroke="var(--primary)" stroke-width="16" stroke-linecap="round"
+          stroke-dasharray="477.5" stroke-dashoffset="477.5"
+          transform="rotate(-90 90 90)" style="transition:stroke-dashoffset 0.6s cubic-bezier(0.34,1.1,0.64,1),stroke 0.4s"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pct" id="percent">0%</div>
+        <div class="ring-label">Attendance</div>
+      </div>
     </div>
 
-    <p class="sec-label">Your Classes</p>
-    <div class="in-row">
-      <div class="field"><label>Attended</label><input id="att" type="number" placeholder="42" min="0" oninput="clearRes()"/></div>
-      <div class="field"><label>Total</label><input id="tot" type="number" placeholder="60" min="0" oninput="clearRes()"/></div>
+    <div id="statusWrap">
+      <span class="status-pill status-na"><span class="dot"></span>No Data</span>
     </div>
 
-    <button class="go-btn" onclick="calc()">Calculate →</button>
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-box-label">Projected</div>
+        <div class="stat-box-val" id="proj">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-label">Classes Needed</div>
+        <div class="stat-box-val" id="needed">—</div>
+      </div>
+    </div>
 
-    <div class="result" id="res">
-      <hr class="sep"/>
-      <div class="pct-row">
-        <div class="big-pct" id="bigPct">—</div>
-        <div style="text-align:right">
-          <div class="pill" id="pill">—</div>
-          <span class="status-txt" id="sTxt">—</span>
+    <div class="bunk-bar" id="bunkBar">
+      <div class="bunk-label" id="bunkLabel">You can bunk</div>
+      <div class="bunk-val" id="bunkCount">—</div>
+    </div>
+
+    <div class="msg" id="message">Enter your attendance data below</div>
+  </div>
+
+  <!-- Target -->
+  <div>
+    <div class="section-hdr">Target Percentage</div>
+    <div class="seg" id="segControl">
+      <div class="seg-thumb-el" id="segThumb"></div>
+      <div class="seg-opt active" data-val="75" data-idx="0">75%</div>
+      <div class="seg-opt" data-val="80" data-idx="1">80%</div>
+      <div class="seg-opt" data-val="85" data-idx="2">85%</div>
+      <div class="seg-opt" data-val="90" data-idx="3">90%</div>
+    </div>
+  </div>
+
+  <!-- Inputs -->
+  <div>
+    <div class="section-hdr">Current Attendance</div>
+    <div class="list-card">
+      <div class="list-row">
+        <div class="list-icon blue">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="2" stroke="var(--primary)" stroke-width="1.5"/><path d="M1 6h14" stroke="var(--primary)" stroke-width="1.5"/><path d="M5 1v2M11 1v2" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
+        <div class="list-text"><div class="list-text-label">Total Classes</div></div>
+        <input id="total" class="list-input" type="number" inputmode="numeric" min="0" value="60" placeholder="0"/>
       </div>
-      <div class="prog-track"><div class="prog-fill" id="pBar"></div></div>
-      <div class="stats-row">
-        <div class="stat"><span class="v" id="sA">—</span><span class="l">Attended</span></div>
-        <div class="stat"><span class="v" id="sM">—</span><span class="l">Missed</span></div>
-        <div class="stat"><span class="v" id="sT">—</span><span class="l">Total</span></div>
-      </div>
-      <div class="bunk-box">
-        <div><div class="bl" id="bL">Can still bunk</div><div class="bs" id="bS">and stay safe</div></div>
-        <div class="bn" id="bN">0</div>
+      <div class="list-row">
+        <div class="list-icon green">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.5 3.5 6.5-7" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="list-text"><div class="list-text-label">Classes Attended</div></div>
+        <input id="attended" class="list-input" type="number" inputmode="numeric" min="0" value="45" placeholder="0"/>
       </div>
     </div>
   </div>
 
-  <!-- Contextual message after calc -->
-  <div class="msg-card" id="msgCard">
-    <span class="msg-tag" id="mTag">—</span>
-    <div class="msg-head" id="mHead">—</div>
-    <p class="msg-body" id="mBody">—</p>
+  <!-- Quick Actions -->
+  <div class="actions">
+    <button class="action-btn btn-present" id="present">+ Present</button>
+    <button class="action-btn btn-absent" id="absent">+ Absent</button>
   </div>
 
-  <!-- Rotating quote after calc -->
-  <div class="quote-strip" id="qStrip" onclick="nextQ()">
-    <div class="q-label">From students who've been here <span>tap to refresh ↻</span></div>
-    <div class="q-text" id="qTxt">—</div>
-    <div class="q-author" id="qAuth">—</div>
+  <!-- Upcoming -->
+  <div>
+    <div class="section-hdr">Upcoming Classes</div>
+    <div class="list-card">
+      <div class="list-row">
+        <div class="list-icon orange">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--orange)" stroke-width="1.5"/><path d="M8 5v3.5l2.5 1.5" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="list-text"><div class="list-text-label">Upcoming Classes</div></div>
+        <input id="upcoming" class="list-input" type="number" inputmode="numeric" placeholder="—"/>
+      </div>
+      <div class="list-row">
+        <div class="list-icon blue">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="list-text"><div class="list-text-label">Will Attend</div></div>
+        <input id="willAttend" class="list-input" type="number" inputmode="numeric" placeholder="—"/>
+      </div>
+    </div>
   </div>
 
-  <p class="footer-note" id="footNote">
-    We know you're here because you're thinking about bunking tomorrow.<br/>
-    That's fine. Just remember — the portal doesn't negotiate.
-  </p>
+  <div class="actions">
+    <button class="action-btn btn-apply" id="apply">Apply Plan</button>
+    <button class="action-btn btn-reset" id="reset">Reset All</button>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">EliteStocks © 2026</div>
+  </div>
 
 </div>
+
+<!-- Roast Sheet -->
+<div id="roastOverlay" class="roast-overlay">
+  <div class="roast-sheet">
+    <span class="roast-emoji">🙃</span>
+    <div class="roast-title">Invalid Input</div>
+    <div class="roast-body" id="roastText">Attended can't exceed total classes.</div>
+    <button id="roastClose" class="roast-ok">Got It</button>
+  </div>
+</div>
+
 <script>
-const PRAISE = [
-  { head: "You're actually doing great.", body: "Most students at this stage have burned through half their buffer already. You haven't. Keep showing up — consistency is the only thing that compounds in university." },
-  { head: "Attendance locked in. Don't ruin it.", body: "You've done the hard part: just showing up. The temptation to coast grows as the semester gets long. The buffer you build today protects you when you actually need it — sick days, travel, real emergencies." },
-  { head: "A+ on showing up, at least.", body: "Whatever happens in the exam, no one can take away the fact that you were there. Showing up is 90% of university. You're nailing the 90%. Keep the streak alive." },
-  { head: "Safe zone. Protect it.", body: "You're in a good place right now. But every bunk from here makes the number smaller. Use your buffer only when you genuinely have to — not just because Monday feels far away." },
-  { head: "You're the friend everyone asks notes from.", body: "Rare. Keep being that person. The semester isn't over, and the people who maintain this through the end are the ones who sit exams without panic." },
-  { head: "Solid. Now stay there.", body: "Getting to a safe percentage is one thing. Staying there when everyone else starts skipping is another. You're doing the first part well. The second part is where it counts." },
-];
+const $=id=>document.getElementById(id);
+const totalEl=$('total'),attendedEl=$('attended'),upcomingEl=$('upcoming'),willAttendEl=$('willAttend');
+const percentEl=$('percent'),statusWrap=$('statusWrap'),projEl=$('proj'),neededEl=$('needed');
+const bunkLabel=$('bunkLabel'),bunkCount=$('bunkCount'),messageEl=$('message'),currentTargetEl=$('currentTarget');
+const roastOverlay=$('roastOverlay'),roastText=$('roastText'),roastClose=$('roastClose');
+const ringTrack=$('ringTrack'),bunkBar=$('bunkBar');
+const KEY='att_elite_v2';
+const CIRC=2*Math.PI*76;
 
-const MOTIVATE = [
-  { head: "Time to run a recovery sprint.", body: "You're below the limit — but it's fixable. Attend every class from here without missing a single one. The number above is your target. Not tomorrow. Starting next class." },
-  { head: "The math is speaking. Listen.", body: "Right now, skipping even one more class makes recovery harder. The number shown is the minimum consecutive classes you need to attend to get back above the limit. No gaps. No 'I'll catch up later.'" },
-  { head: "Shortage means no hall ticket.", body: "No hall ticket means no exam. No exam means a very long, very difficult conversation with people who love you. You have time to fix this. Use it starting now." },
-  { head: "Every class from here counts double.", body: "In recovery mode, each class you attend brings the number down fast. Each one you miss sends it further away. Show up to the next one. Then the one after. That's the whole plan." },
-  { head: "Be the comeback story.", body: "Students have recovered from worse. It takes showing up every single day for the rest of the semester — not heroics, just presence. Presence is something you can absolutely do." },
-  { head: "You came here to check. Now go fix it.", body: "The fact that you're calculating means you're aware. Awareness is step one. Step two is closing this tab and walking into the next lecture. The number doesn't fix itself." },
-];
+function toInt(v){const n=parseInt(String(v).replace(/[^\d]/g,''),10);return isNaN(n)?0:Math.max(0,n);}
+function pct(a,t){return t<=0?0:(a/t)*100;}
+function classesNeeded(a,t,tp){const r=tp/100;if(pct(a,t)>=tp)return 0;if(r>=1)return Infinity;return Math.max(0,Math.ceil((r*t-a)/(1-r)));}
+function maxBunk(a,t,tp){const r=tp/100;if(r===0)return Infinity;if(pct(a,t)<tp)return 0;return Math.max(0,Math.floor((a-r*t)/r));}
 
-const QUOTES = [
-  { t: "I calculated I had 5 bunk days left. Used all 5. Then got sick. Didn't sit the exam.", a: "Former 3rd year, now repeating the semester" },
-  { t: "The one class I skipped because nothing important ever happens — the entire exam unit was covered.", a: "Overconfident student, underprepared for finals" },
-  { t: "My attendance was 74.8%. The requirement was 75%. Didn't get the hall ticket. 0.2% cost me 6 months.", a: "The cruelest kind of math" },
-  { t: "I thought getting notes from friends was the same as attending. It is not the same.", a: "Student who failed the practical component" },
-  { t: "Bunked to study for another exam. That exam was open book. Failed both anyway.", a: "Strategic mastermind, allegedly" },
-  { t: "Missed 3 lectures during a productive work-from-canteen phase. Cost me 12%.", a: "Canteen regular, exam irregular" },
-  { t: "I aimed for exactly 76%. There were more sick days than I had planned for.", a: "Plans vs. reality, a classic tale" },
-  { t: "The professor didn't take attendance most days. Except the days I bunked. Always exactly those days.", a: "Coincidence? Unlikely." },
-  { t: "Every bunk felt like a small victory. The shortage letter felt like everything else.", a: "Batch of 2023, wiser now" },
-  { t: "I skipped the 8AM thinking it didn't matter. The 8AM was where he explained the entire project rubric.", a: "Submitted the project wrong. Twice." },
-  { t: "Bunk one, feel free. Bunk ten, feel invincible. Bunk twenty, feel nothing. Shortage letter: feel everything at once.", a: "The complete arc, summarised" },
-  { t: "I had an elaborate excuse system. The portal had an attendance system. The portal won.", a: "Overdesigned strategy, underdelivered results" },
-  { t: "My friend group all bunked together. We all got detained together. Solidarity, I suppose.", a: "Group project in consequences" },
-  { t: "I asked the professor to consider my circumstances. She said the rule applies to everyone. It does.", a: "Learned about policy the hard way" },
-  { t: "Skipped the boring lectures. Turns out the boring ones had the most exam content. Every single time.", a: "Correlation everyone else already knew about" },
-  { t: "Used up my entire bunking budget in the first month. The rest of the semester was a 9AM attendance pilgrimage.", a: "Early spender, long-term sufferer" },
-  { t: "Thought I was managing it smartly. The spreadsheet said yes. The portal said no.", a: "Spreadsheet lied. Portal didn't." },
-  { t: "Took a mental health day. Then another. Then I needed a mental health day because of my attendance.", a: "The loop nobody wants to be in" },
-  { t: "I know you are here because you are planning to bunk. I was too. I wish someone had stopped me.", a: "Person who wrote this calculator" },
-  { t: "The class you skip is always the one that was actually interesting. Without exception.", a: "Observed across four semesters" },
-];
-
-let crit = 75, qIdx = Math.floor(Math.random() * QUOTES.length);
-
-function setCrit(btn) {
-  document.querySelectorAll('.c-btn').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  crit = +btn.dataset.v;
-  clearRes();
+// Segmented control
+const segs=Array.from(document.querySelectorAll('.seg-opt'));
+const segThumb=$('segThumb');
+function getTarget(){const a=segs.find(s=>s.classList.contains('active'));return a?Number(a.dataset.val):75;}
+function setTarget(v,skipUpdate){
+  segs.forEach(s=>{const active=Number(s.dataset.val)===Number(v);s.classList.toggle('active',active);});
+  const idx=segs.findIndex(s=>Number(s.dataset.val)===Number(v));
+  if(idx>=0)segThumb.style.transform=`translateX(${idx*100}%)`;
+  currentTargetEl.textContent=Number(v)+'% target';
+  if(!skipUpdate)update(true);
 }
+segs.forEach(s=>s.addEventListener('click',()=>setTarget(s.dataset.val)));
 
-function clearRes() {
-  document.getElementById('res').classList.remove('show');
-  document.getElementById('res').style.display = 'none';
-  ['msgCard','qStrip','footNote'].forEach(id => {
-    document.getElementById(id).classList.remove('show');
-  });
+// Roast
+const ROASTS=[
+  ["🤦","Attended > Total?","You can't attend more classes than exist. That's not how reality works."],
+  ["😤","Come On Now","Attended can't exceed total classes. Fix it."],
+  ["🙃","Nice Try","More attendance than classes? Impressive logic, zero validity."],
+  ["🫵","Stop That","Classes attended cannot be more than total. Simple math."],
+  ["💀","Absolutely Not","You somehow broke the space-time continuum. Attended ≤ Total, always."],
+  ["🤡","Bro…","That number makes zero sense. Attended can't beat total."],
+  ["😑","Really?","Attended more than you took? That's not bunking, that's fiction."],
+];
+let roastTimer=null;
+function showRoast(){
+  const r=ROASTS[Math.floor(Math.random()*ROASTS.length)];
+  document.querySelector('.roast-emoji').textContent=r[0];
+  document.querySelector('.roast-title').textContent=r[1];
+  roastText.textContent=r[2];
+  roastOverlay.style.display='flex';
+  if(roastTimer)clearTimeout(roastTimer);
+  roastTimer=setTimeout(()=>roastOverlay.style.display='none',4500);
 }
+roastClose.addEventListener('click',()=>roastOverlay.style.display='none');
+roastOverlay.addEventListener('click',e=>{if(e.target===roastOverlay)roastOverlay.style.display='none';});
 
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+// Persist
+function save(){try{localStorage.setItem(KEY,JSON.stringify({total:toInt(totalEl.value),attended:toInt(attendedEl.value),upcoming:toInt(upcomingEl.value),willAttend:toInt(willAttendEl.value),target:getTarget()}));}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');if(typeof s.total==='number')totalEl.value=s.total;if(typeof s.attended==='number')attendedEl.value=s.attended;if(typeof s.upcoming==='number'&&s.upcoming>0)upcomingEl.value=s.upcoming;if(typeof s.willAttend==='number'&&s.willAttend>0)willAttendEl.value=s.willAttend;if(typeof s.target==='number')setTarget(s.target,true);}catch(e){}}
 
-function nextQ() {
-  qIdx = (qIdx + 1) % QUOTES.length;
-  const el = document.getElementById('qTxt');
-  el.style.opacity = 0;
-  setTimeout(() => {
-    el.textContent = '\u201C' + QUOTES[qIdx].t + '\u201D';
-    document.getElementById('qAuth').textContent = '— ' + QUOTES[qIdx].a;
-    el.style.opacity = 1;
-  }, 200);
-}
+let prevAttended=toInt(attendedEl.value);
+let prevWillAttend=0;
+let lastState='';
 
-function calc() {
-  const att = parseInt(document.getElementById('att').value);
-  const tot = parseInt(document.getElementById('tot').value);
+function update(force){
+  const total=toInt(totalEl.value);
+  let attended=toInt(attendedEl.value);
+  const upcoming=toInt(upcomingEl.value);
+  let willAttend=toInt(willAttendEl.value);
+  const target=getTarget();
 
-  if (isNaN(att) || isNaN(tot) || tot <= 0 || att < 0) {
-    ['att','tot'].forEach(id => {
-      const el = document.getElementById(id);
-      el.classList.remove('err'); void el.offsetWidth; el.classList.add('err');
-    });
-    return;
-  }
-  if (att > tot) { alert("Attended classes can't exceed total."); return; }
+  if(attended>total){
+    attendedEl.value=prevAttended;
+    attended=prevAttended;
+    showRoast();
+  }else{prevAttended=attended;}
+  if(willAttend>upcoming){willAttendEl.value=prevWillAttend;willAttend=prevWillAttend;}
+  else{prevWillAttend=willAttend;}
 
-  const pct = (att / tot) * 100;
-  const pR  = Math.round(pct * 10) / 10;
-  const m   = crit / 100;
-  const safe = pct >= crit;
+  const safeAtt=Math.min(attended,total);
+  const curPct=+(pct(safeAtt,total).toFixed(2));
+  const key=`${total},${safeAtt},${upcoming},${willAttend},${curPct},${target}`;
+  if(!force&&key===lastState)return;
+  lastState=key;
 
-  const canBunk = safe ? Math.max(0, Math.floor((att - m * tot) / m)) : 0;
-  const needed  = !safe ? Math.ceil((m * tot - att) / (1 - m)) : 0;
+  // Ring
+  const offset=CIRC*(1-curPct/100);
+  ringTrack.style.strokeDashoffset=Math.max(0,Math.min(CIRC,offset));
+  const ringColor=total===0?'var(--t3)':curPct>=target?'var(--green)':curPct>=target*0.85?'var(--orange)':'var(--red)';
+  ringTrack.style.stroke=ringColor;
 
-  let col, pStyle, status;
-  if (pct >= crit + 10) {
-    col = 'var(--safe)'; status = 'Comfortably safe';
-    pStyle = 'background:var(--safe-bg);color:var(--safe);';
-  } else if (pct >= crit) {
-    col = 'var(--warn)'; status = 'Just above limit';
-    pStyle = 'background:var(--warn-bg);color:var(--warn);';
-  } else {
-    col = 'var(--danger)'; status = 'Below required';
-    pStyle = 'background:var(--danger-bg);color:var(--danger);';
-  }
+  // Percentage display
+  percentEl.textContent=total===0?'—':curPct.toFixed(1)+'%';
 
-  document.getElementById('bigPct').textContent = pR.toFixed(1) + '%';
-  document.getElementById('bigPct').style.color = col;
-  const pill = document.getElementById('pill');
-  pill.textContent = safe ? '✓ Safe' : '✗ Shortage';
-  pill.style.cssText = pStyle;
-  document.getElementById('sTxt').textContent = status;
+  // Status
+  if(total===0)statusWrap.innerHTML='<span class="status-pill status-na"><span class="dot"></span>No Data</span>';
+  else if(curPct>=target)statusWrap.innerHTML='<span class="status-pill status-on"><span class="dot"></span>On Track</span>';
+  else statusWrap.innerHTML='<span class="status-pill status-low"><span class="dot"></span>Below Target</span>';
 
-  const pBar = document.getElementById('pBar');
-  pBar.style.background = col;
-  setTimeout(() => pBar.style.width = Math.min(100, pR) + '%', 40);
+  // Projected
+  const pTot=total+upcoming,pAtt=safeAtt+willAttend;
+  projEl.textContent=pTot>0?`${pAtt}/${pTot} (${pct(pAtt,pTot).toFixed(1)}%)`:'—';
 
-  document.getElementById('sA').textContent = att;
-  document.getElementById('sM').textContent = tot - att;
-  document.getElementById('sT').textContent = tot;
+  // Needed
+  const needed=classesNeeded(attended,total,target);
+  neededEl.textContent=needed===Infinity?'Impossible':needed===0?'0 more':needed+(needed===1?' class':' classes');
 
-  if (safe) {
-    document.getElementById('bL').textContent = 'Can still bunk';
-    document.getElementById('bS').textContent = `and stay above ${crit}%`;
-    document.getElementById('bN').textContent = canBunk;
-    document.getElementById('bN').style.color = canBunk > 0 ? col : 'var(--danger)';
-  } else {
-    document.getElementById('bL').textContent = 'Must attend';
-    document.getElementById('bS').textContent = 'consecutive classes to recover';
-    document.getElementById('bN').textContent = needed;
-    document.getElementById('bN').style.color = 'var(--danger)';
+  // Bunk
+  if(total===0&&attended===0){
+    bunkLabel.textContent='Awaiting data';bunkCount.textContent='';
+    bunkBar.style.background='var(--seg-bg)';
+    bunkLabel.style.color='var(--t3)';bunkCount.style.color='var(--t3)';
+    messageEl.textContent='Enter your attendance data below';
+  }else if(curPct>=target){
+    const bunk=maxBunk(attended,total,target);
+    bunkLabel.textContent='You can bunk';
+    bunkCount.textContent=bunk===Infinity?'Many':bunk+(bunk===1?' class':' classes');
+    bunkBar.style.background='var(--green-bg)';
+    bunkLabel.style.color='var(--green)';bunkCount.style.color='var(--green)';
+    messageEl.textContent=bunk>0?`Skip ${bunk} ${bunk===1?'class':'classes'} and still hit ${target}%`:'Right on the edge — attend every class!';
+  }else{
+    const needCount=needed===Infinity?'Impossible':needed+(needed===1?' class':' classes');
+    bunkLabel.textContent='You still need';
+    bunkCount.textContent=needCount;
+    bunkBar.style.background='var(--red-bg)';
+    bunkLabel.style.color='var(--red)';bunkCount.style.color='var(--red)';
+    messageEl.textContent=`Attend ${needed===Infinity?'many more':'more'} classes to reach ${target}% target`;
   }
 
-  const res = document.getElementById('res');
-  res.style.display = 'block'; void res.offsetWidth; res.classList.add('show');
-
-  // Contextual message
-  const data = safe ? pick(PRAISE) : pick(MOTIVATE);
-  const mc = document.getElementById('msgCard');
-  const msgColours = safe
-    ? (pct >= crit + 10
-        ? { bg: 'var(--safe-bg)', border: 'var(--safe-border)', col: 'var(--safe)', text: '#0F4F2E' }
-        : { bg: 'var(--warn-bg)', border: 'var(--warn-border)', col: 'var(--warn)', text: '#6B3A05' })
-    : { bg: 'var(--danger-bg)', border: 'var(--danger-border)', col: 'var(--danger)', text: '#6B1D18' };
-
-  mc.style.cssText = `display:block; background:${msgColours.bg}; border:1px solid ${msgColours.border}; color:${msgColours.text};`;
-  document.getElementById('mTag').textContent = safe ? 'You\'re on track' : 'Recovery needed';
-  document.getElementById('mTag').style.color = msgColours.col;
-  document.getElementById('mHead').textContent = data.head;
-  document.getElementById('mBody').textContent = data.body;
-  mc.classList.remove('show'); void mc.offsetWidth; mc.classList.add('show');
-
-  // Quote
-  const q = QUOTES[qIdx];
-  document.getElementById('qTxt').textContent   = '\u201C' + q.t + '\u201D';
-  document.getElementById('qTxt').style.opacity = 1;
-  document.getElementById('qAuth').textContent  = '— ' + q.a;
-  const qs = document.getElementById('qStrip');
-  qs.classList.remove('show'); void qs.offsetWidth; qs.classList.add('show');
-
-  const fn = document.getElementById('footNote');
-  fn.classList.remove('show'); void fn.offsetWidth; fn.classList.add('show');
+  save();
 }
+
+// Events
+attendedEl.addEventListener('focus',()=>prevAttended=toInt(attendedEl.value));
+attendedEl.addEventListener('input',()=>update());
+totalEl.addEventListener('input',()=>{
+  const t=toInt(totalEl.value),a=toInt(attendedEl.value);
+  if(a>t){attendedEl.value=t;prevAttended=t;}
+  update();
+});
+upcomingEl.addEventListener('input',update);
+willAttendEl.addEventListener('focus',()=>prevWillAttend=toInt(willAttendEl.value));
+willAttendEl.addEventListener('input',()=>{
+  const e=toInt(willAttendEl.value),u=toInt(upcomingEl.value);
+  if(e>u){willAttendEl.value=prevWillAttend;}else{prevWillAttend=e;update();}
+});
+
+$('present').addEventListener('click',()=>{
+  totalEl.value=toInt(totalEl.value)+1;
+  attendedEl.value=toInt(attendedEl.value)+1;
+  prevAttended=toInt(attendedEl.value);
+  update();
+});
+$('absent').addEventListener('click',()=>{
+  totalEl.value=toInt(totalEl.value)+1;
+  update();
+});
+$('apply').addEventListener('click',()=>{
+  const u=toInt(upcomingEl.value),w=Math.min(toInt(willAttendEl.value),u);
+  totalEl.value=toInt(totalEl.value)+u;
+  attendedEl.value=toInt(attendedEl.value)+w;
+  prevAttended=toInt(attendedEl.value);
+  upcomingEl.value='';willAttendEl.value='';prevWillAttend=0;
+  update();
+});
+$('reset').addEventListener('click',()=>{
+  if(!confirm('Reset all attendance data?'))return;
+  totalEl.value=0;attendedEl.value=0;upcomingEl.value='';willAttendEl.value='';
+  prevAttended=0;prevWillAttend=0;
+  setTarget(75,true);
+  localStorage.removeItem(KEY);
+  update(true);
+});
+
+[totalEl,attendedEl,upcomingEl,willAttendEl].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur();}));
+
+// Init
+load();
+if(!segs.some(s=>s.classList.contains('active')))setTarget(75,true);
+// position seg thumb
+const initIdx=segs.findIndex(s=>s.classList.contains('active'));
+if(initIdx>=0)segThumb.style.transform=`translateX(${initIdx*100}%)`;
+update(true);
 </script>
 </body>
 </html>
